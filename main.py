@@ -59,3 +59,4 @@ def initial_permutation(bits):
 if __name__ == "__main__":
     generated = '1001111111011101110100011001010000111101100100110000010111001101'
     print(len(expansion(generated[:32])))
+    print(1)
