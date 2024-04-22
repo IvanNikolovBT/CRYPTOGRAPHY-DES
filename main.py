@@ -10,6 +10,23 @@ def tables(table):
              57, 49, 41, 33, 25, 17, 9, 1, 59, 51, 43, 35, 27, 19, 11, 3,
              61, 33, 45, 37, 29, 21, 13, 5, 63, 55, 47, 39, 31, 23, 15, 7]
         return IP
+    if (table == 'IIP'):
+        IIP = [40, 8, 48, 16, 56, 24, 64, 32,
+               39, 7, 47, 15, 55, 23, 63, 31,
+               38, 6, 46, 14, 54, 22, 62, 30,
+               37, 5, 45, 13, 53, 21, 61, 29,
+               36, 4, 44, 12, 52, 20, 60, 28,
+               35, 3, 43, 11, 51, 19, 59, 27,
+               34, 2, 42, 10, 50, 18, 58, 26,
+               33, 1, 41, 9, 49, 17, 57, 25]
+        return IIP
+    if (table == 'P'):
+        P = [16, 7, 20, 21, 29, 12, 28, 17,
+            1, 15, 23, 26, 5, 18, 31, 10,
+            2, 8, 24, 14, 32, 27, 3, 9,
+            19, 13, 30, 6, 22, 11, 4, 25]
+        return P
+
     if (table == 'EX'):
         '''Used in the expansiion from 32 bits to 64 bits.'''
         EXPANSION = \
@@ -72,7 +89,10 @@ def tables(table):
               [2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11]]
         return S8
 
-
+def getShiftAmmount(round):
+    if (round==1 or round==2 or round==9 or round==16):
+        return 1
+    return 2
 def getRandom_N(r):
     number = ""
     for i in range(r):
@@ -112,11 +132,59 @@ def xor(bits, key):
     return str(bin(int(bits, 2) ^ int(key, 2)))
 
 
+def setSbox(bits, table):
+    return tables(table)[int(bits[0]+bits[5],2)][int(bits[1:5],2)]
+
 def s_boxes(bits):
-    pass
+    if(len(bits)!=48):
+        raise Exception('Can`t do s boxes, not the same length')
+    newbits=""
+    for i in range(8):
+        word=str(bin(setSbox(bits[4*i:4*i+6],f'S{i+1}'))).split('b')[1]
+        word = paddWord(word,4)
+        newbits+=word
+    return  newbits
+
+
+def paddWord(word,len):
+    if (len(word) != len):
+        while (len(word) != len):
+            word = '0' + word
+    return word
+
+def perumtation(word):
+    return  setBits(word,'P')
+def feistel(r,key):
+    if (len(r)!=32):
+        raise Exception('Right side is not 32')
+    if(len(key)!=48):
+        raise Exception('Key is not 48')
+    r=expansion(r)
+    r=xor(r,key)
+    r=s_boxes(r)
+    return perumtation(r)
+
+
+
+def encode(pt,key):
+        if(len(pt)!=64):
+            raise Exception('Plain text is not of 64 length')
+        if(len(key)!=56):
+            raise Exception('Key not adequate length (56)')
+        pt=initial_permutation(pt)
+        for i in range(16):
+
+            ''' TO DO IMPLEMENT BIT SHFIT FOR EVERY ROUND'''
+            '''TO DO IMPLEMENT KEY DISTRIBUTION ALGORITHM'''
+            l,r=pt[:32],pt[32:]
+            pt=r+xor(l,feistel(r,key))
+        return  pt
 
 if __name__ == "__main__":
     generated = '1001111111011101110100011001010000111101100100110000010111001101'
     # print(len(expansion(generated[:32])))
     key = '1000110101011101111010101000000110101111010111010001011000000111'
+    s_box='000110100001101110010110110111011111100010001001'
+
     # print(int(xor('10101','10101'),2))
+    print(s_boxes(s_box))
