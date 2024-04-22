@@ -20,13 +20,36 @@ def tables(table):
                34, 2, 42, 10, 50, 18, 58, 26,
                33, 1, 41, 9, 49, 17, 57, 25]
         return IIP
+    ''' Used in permutations.'''
     if (table == 'P'):
         P = [16, 7, 20, 21, 29, 12, 28, 17,
-            1, 15, 23, 26, 5, 18, 31, 10,
-            2, 8, 24, 14, 32, 27, 3, 9,
-            19, 13, 30, 6, 22, 11, 4, 25]
+             1, 15, 23, 26, 5, 18, 31, 10,
+             2, 8, 24, 14, 32, 27, 3, 9,
+             19, 13, 30, 6, 22, 11, 4, 25]
         return P
-
+    '''Used in the key scheduling algorithms'''
+    if (table == 'PCL'):
+        PCL = [57, 49, 41, 33, 25, 17, 9,
+               1, 58, 50, 42, 34, 26, 18,
+               10, 2, 59, 51, 43, 35, 27,
+               19, 11, 3, 60, 52, 44, 36]
+        return PCL
+    if (table == 'PCR'):
+        PCR = [63, 55, 47, 39, 31, 23, 15,
+               7, 62, 54, 46, 38, 30, 22,
+               14, 6, 61, 53, 45, 37, 29,
+               21, 13, 5, 28, 20, 12, 4]
+        return PCR
+    if (table == 'PC2'):
+        PC2 = [14, 17, 11, 24, 1, 5,
+               3, 28, 15, 6, 21, 10,
+               23, 19, 12, 4, 26, 8,
+               16, 7, 27, 20, 13, 2,
+               41, 52, 31, 37, 47, 55,
+               30, 40, 51, 45, 33, 48,
+               44, 49, 39, 56, 34, 53,
+               46, 42, 50, 36, 29, 32]
+        return PC2
     if (table == 'EX'):
         '''Used in the expansiion from 32 bits to 64 bits.'''
         EXPANSION = \
@@ -89,10 +112,13 @@ def tables(table):
               [2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11]]
         return S8
 
+
 def getShiftAmmount(round):
-    if (round==1 or round==2 or round==9 or round==16):
+    if (round == 1 or round == 2 or round == 9 or round == 16):
         return 1
     return 2
+
+
 def getRandom_N(r):
     number = ""
     for i in range(r):
@@ -100,15 +126,18 @@ def getRandom_N(r):
     return number
 
 
-def roundShift(bits, round):
-    pass
+def roundShift(bits, round, flag):
+    amount = getShiftAmmount(round) % len(bits)
+    return bits[flag * amount:] + bits[:flag * amount]
 
 
 def setBits(bits, table):
     n = len(table)
+    #if isinstance(bits,tuple):
+    #    bits=bits[0]+bits[1]
     newbits = ""
     for i in range(n):
-        newbits += bits[table[i] - 1]
+        newbits += bits[table[i]-1]
     return newbits
 
 
@@ -126,65 +155,91 @@ def initial_permutation(bits):
     return setBits(bits, tables('IP'))
 
 
-def xor(bits, key):
+def xor(bits, key,num):
     if (len(bits) != len(key)):
         raise Exception("Can`t shift if they are different lengths")
-    return str(bin(int(bits, 2) ^ int(key, 2)))
+    return paddWord(str(bin(int(bits, 2) ^ int(key, 2))).split('b')[1],num)
 
 
 def setSbox(bits, table):
-    return tables(table)[int(bits[0]+bits[5],2)][int(bits[1:5],2)]
+    return tables(table)[int(bits[0] + bits[5], 2)][int(bits[1:5], 2)]
+
 
 def s_boxes(bits):
-    if(len(bits)!=48):
+    if (len(bits) != 48):
         raise Exception('Can`t do s boxes, not the same length')
-    newbits=""
+    newbits = ""
     for i in range(8):
-        word=str(bin(setSbox(bits[4*i:4*i+6],f'S{i+1}'))).split('b')[1]
-        word = paddWord(word,4)
-        newbits+=word
-    return  newbits
+        word = str(bin(setSbox(bits[4 * i:4 * i + 6], f'S{i + 1}'))).split('b')[1]
+        if (len(word) != 4):
+            word = paddWord(word, 4)
+        newbits += word
+    return newbits
 
 
-def paddWord(word,len):
-    if (len(word) != len):
-        while (len(word) != len):
-            word = '0' + word
+def paddWord(word, n):
+    while (len(word) != n):
+        word = '0' + word
     return word
 
+
 def perumtation(word):
-    return  setBits(word,'P')
-def feistel(r,key):
-    if (len(r)!=32):
+    return setBits(word, tables('P'))
+
+
+def keyTransformation(key, i, flag):
+
+    l, r = key[:29],key[29:]
+    l=roundShift(l,i,flag)
+    r=roundShift(r,i,flag)
+    return setBits(l+r,tables('PC2'))
+
+
+def keyManufactory(key, i,flag):
+    l, r = setBits(key, tables('PCL')), setBits(key, tables('PCR'))
+    l = roundShift(l, i, flag)
+    r = roundShift(r, i, flag)
+    return l, r
+
+
+def feistel(r, key):
+    if (len(r) != 32):
         raise Exception('Right side is not 32')
-    if(len(key)!=48):
+    if (len(key) != 48):
         raise Exception('Key is not 48')
-    r=expansion(r)
-    r=xor(r,key)
-    r=s_boxes(r)
+    r = expansion(r)
+    r = xor(r, key,48)
+    r = s_boxes(r)
     return perumtation(r)
 
 
+def encode(pt, key):
+    if (len(pt) != 64):
+        raise Exception('Plain text is not of 64 length')
+    if (len(key) != 64):
+        raise Exception('Key not adequate length (56)')
+    pt = initial_permutation(pt)
+    k1, k2 = keyManufactory(key, getShiftAmmount(1), 1)
+    key = k1 + k2
+    for i in range(16):
 
-def encode(pt,key):
-        if(len(pt)!=64):
-            raise Exception('Plain text is not of 64 length')
-        if(len(key)!=56):
-            raise Exception('Key not adequate length (56)')
-        pt=initial_permutation(pt)
-        for i in range(16):
+        keyEncode = keyTransformation(key, getShiftAmmount(i+1), 1)
+        l, r = pt[:32], pt[32:]
+        pt = r + xor(l, feistel(r, keyEncode),32)
+        if (i==1):
+            print('zdravo')
+    return pt
 
-            ''' TO DO IMPLEMENT BIT SHFIT FOR EVERY ROUND'''
-            '''TO DO IMPLEMENT KEY DISTRIBUTION ALGORITHM'''
-            l,r=pt[:32],pt[32:]
-            pt=r+xor(l,feistel(r,key))
-        return  pt
 
 if __name__ == "__main__":
     generated = '1001111111011101110100011001010000111101100100110000010111001101'
     # print(len(expansion(generated[:32])))
     key = '1000110101011101111010101000000110101111010111010001011000000111'
-    s_box='000110100001101110010110110111011111100010001001'
+    s_box = '000110100001101110010110110111011111100010001001'
 
     # print(int(xor('10101','10101'),2))
-    print(s_boxes(s_box))
+    # print(s_boxes(s_box))
+    # print(leftRoundShift('123456789',3))
+    # print(rightRoundShift('123456789',3))
+    # print(rightRoundShift(leftRoundShift('123456789',3),3))
+    print(encode(generated,key))
