@@ -223,14 +223,15 @@ def feistel(r, key):
     r = s_boxes(r)
     return perumtation(r)
 
+
 def generateKeys(key):
     if (len(key) != 64):
         raise Exception('Key not adequate length (64)')
-    keys=[]
-    l,r=setBits(key,tables('PCL')),setBits(key,tables('PCR'))
+    keys = []
+    l, r = setBits(key, tables('PCL')), setBits(key, tables('PCR'))
     for i in range(16):
-        l, r = roundShift(l, getShiftAmmount(i+1), 1), roundShift(r, getShiftAmmount(i+1), 1)
-        keys.append(setBits(l+r,tables('PC2')))
+        l, r = roundShift(l, getShiftAmmount(i + 1), 1), roundShift(r, getShiftAmmount(i + 1), 1)
+        keys.append(setBits(l + r, tables('PC2')))
     return keys
 
 
@@ -240,11 +241,12 @@ def encode(pt, key):
     if (len(key) != 64):
         raise Exception('Key not adequate length (64)')
     pt = initial_permutation(pt)
-    keys=generateKeys(key)
+    keys = generateKeys(key)
     for i in range(16):
         l, r = pt[:32], pt[32:]
         pt = r + xor(l, feistel(r, keys[i]), 32)
     return pt
+
 
 def decode(pt, key):
     if (len(pt) != 64):
@@ -253,31 +255,51 @@ def decode(pt, key):
         print(len(key))
         raise Exception('Key not adequate length (64)')
     pt = inverse_initial_permutation(pt)
-    keys=generateKeys(key)
+    keys = generateKeys(key)
     for i in range(16):
         l, r = pt[:32], pt[32:]
         pt = r + xor(l, feistel(r, keys[-i]), 32)
 
     return pt
+
+
+def typeOfKey(key):
+    WK = ['0101010101010101', 'FEFEFEFEFEFEFEFE ',
+          'E0E0E0E0F1F1F1F1', '1F1F1F1F0E0E0E0E']
+    SWK = ['011F011F010E010E', '1F011F010E010E01',
+           '01E001E001F101F1', 'E001E001F101F101',
+           '01FE01FE01FE01FE', 'FE01FE01FE01FE01',
+           '1FE01FE00EF10EF1', 'E01FE01FF10EF10E',
+           '1FFE1FFE0EFE0EFE', 'FE1FFE1FFE0EFE0E',
+           'E0FEE0FEF1FEF1FE', 'FEE0FEE0FEF1FEF1']
+    PWK=[]
+
+    broj=0
+    for i in range(len(SWK)):
+        for s in SWK:
+            if SWK[i]==s:
+                broj+=1
+    print(broj)
+
 def encode1(pt, key):
     if (len(pt) != 64):
         raise Exception('Plain text is not of 64 length')
     if (len(key) != 64):
         raise Exception('Key not adequate length (64)')
-    pt = initial_permutation(pt) #
-    k1, k2 = keyManufactory(key, getShiftAmmount(1), 1) #
+    pt = initial_permutation(pt)  #
+    k1, k2 = keyManufactory(key, getShiftAmmount(1), 1)  #
     key = k1 + k2
 
-    for i in range(1,16):
+    for i in range(1, 16):
         keyEncode = keyTransformation(key, getShiftAmmount(i + 1), 1)
         l, r = pt[:32], pt[32:]
         pt = r + xor(l, feistel(r, keyEncode), 32)
-        k1, k2 = roundShift(key[:28],i,1),roundShift(key[28:],i,1)
-        key=k1+k2
+        k1, k2 = roundShift(key[:28], i, 1), roundShift(key[28:], i, 1)
+        key = k1 + k2
 
     for i in range(8):
-        key=key[:(i+1)*8]+'0'+key[(i+1)*8:]
-    return pt,key
+        key = key[:(i + 1) * 8] + '0' + key[(i + 1) * 8:]
+    return pt, key
 
 
 def decode1(pt, key):
@@ -300,26 +322,28 @@ def decode1(pt, key):
 
     return pt
 
+
 def generateEmptyString():
-    new=''
+    new = ''
     for i in range(64):
-        new+='0'
+        new += '0'
     return new
+
+
 if __name__ == "__main__":
     generated = '1001111111011101110100011001010000111101100100110000010111001101'
     key = '1000110101011101111010101000000110101111010111010001011000000111'
-    empty='0000000000000000000000000000000000000000000000000000000000000000'
+    empty = '0000000000000000000000000000000000000000000000000000000000000000'
 
-    encoded= encode(generated, empty)
+    encoded = encode(generated, empty)
     print(f'Original {generated}')
     print(f'Encoded {encoded}')
-    decoded=decode(encoded,empty)
+    decoded = decode(encoded, empty)
     print(f'Decoded {decoded}')
-    print(generated==decoded)
-    w=0
-    for a,b in zip(encoded,decoded):
-        if a!=b:
-            w+=1
+    print(generated == decoded)
+    w = 0
+    for a, b in zip(encoded, decoded):
+        if a != b:
+            w += 1
     print(w)
-
-
+    print(typeOfKey(key))
