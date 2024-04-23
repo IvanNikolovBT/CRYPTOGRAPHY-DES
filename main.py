@@ -4,11 +4,16 @@ import random
 def tables(table):
     if (table == 'IP'):
         '''Used in the inital permutation'''
-        IP = \
-            [58, 50, 42, 34, 26, 18, 10, 2, 60, 52, 44, 36, 28, 20, 12, 4,
-             62, 54, 46, 38, 30, 22, 14, 6, 64, 56, 48, 40, 32, 24, 16, 8,
-             57, 49, 41, 33, 25, 17, 9, 1, 59, 51, 43, 35, 27, 19, 11, 3,
-             61, 33, 45, 37, 29, 21, 13, 5, 63, 55, 47, 39, 31, 23, 15, 7]
+
+        IP = [58, 50, 42, 34, 26, 18, 10, 2,
+              60, 52, 44, 36, 28, 20, 12, 4,
+              62, 54, 46, 38, 30, 22, 14, 6,
+              64, 56, 48, 40, 32, 24, 16, 8,
+              57, 49, 41, 33, 25, 17, 9, 1,
+              59, 51, 43, 35, 27, 19, 11, 3,
+              61, 53, 45, 37, 29, 21, 13, 5,
+              63, 55, 47, 39, 31, 23, 15, 7]
+
         return IP
     if (table == 'IIP'):
         IIP = [40, 8, 48, 16, 56, 24, 64, 32,
@@ -99,6 +104,7 @@ def tables(table):
               [9, 14, 15, 5, 2, 8, 12, 3, 7, 0, 4, 10, 1, 13, 11, 6],
               [4, 3, 2, 12, 9, 5, 15, 10, 11, 14, 1, 7, 6, 0, 8, 13]]
         return S6
+
     if (table == 'S7'):
         S7 = [[4, 11, 2, 14, 15, 0, 8, 13, 3, 12, 9, 7, 5, 10, 6, 1],
               [13, 0, 11, 7, 4, 9, 1, 10, 14, 3, 5, 12, 2, 15, 8, 6],
@@ -133,11 +139,9 @@ def roundShift(bits, round, flag):
 
 def setBits(bits, table):
     n = len(table)
-    #if isinstance(bits,tuple):
-    #    bits=bits[0]+bits[1]
     newbits = ""
     for i in range(n):
-        newbits += bits[table[i]-1]
+        newbits += bits[table[i] - 1]
     return newbits
 
 
@@ -155,10 +159,18 @@ def initial_permutation(bits):
     return setBits(bits, tables('IP'))
 
 
-def xor(bits, key,num):
+def inverse_initial_permutation(bits):
+    if (len(bits) != len(tables('IIP'))):
+        raise Exception('Cant make the permutatioion IP because they are different lengths.')
+    if (len(bits) != 64):
+        raise Exception('Not the right length (64).')
+    return setBits(bits, tables('IIP'))
+
+
+def xor(bits, key, num):
     if (len(bits) != len(key)):
         raise Exception("Can`t shift if they are different lengths")
-    return paddWord(str(bin(int(bits, 2) ^ int(key, 2))).split('b')[1],num)
+    return paddWord(str(bin(int(bits, 2) ^ int(key, 2))).split('b')[1], num)
 
 
 def setSbox(bits, table):
@@ -188,14 +200,13 @@ def perumtation(word):
 
 
 def keyTransformation(key, i, flag):
+    l, r = key[:29], key[29:]
+    l = roundShift(l, i, flag)
+    r = roundShift(r, i, flag)
+    return setBits(l + r, tables('PC2'))
 
-    l, r = key[:29],key[29:]
-    l=roundShift(l,i,flag)
-    r=roundShift(r,i,flag)
-    return setBits(l+r,tables('PC2'))
 
-
-def keyManufactory(key, i,flag):
+def keyManufactory(key, i, flag):
     l, r = setBits(key, tables('PCL')), setBits(key, tables('PCR'))
     l = roundShift(l, i, flag)
     r = roundShift(r, i, flag)
@@ -208,38 +219,107 @@ def feistel(r, key):
     if (len(key) != 48):
         raise Exception('Key is not 48')
     r = expansion(r)
-    r = xor(r, key,48)
+    r = xor(r, key, 48)
     r = s_boxes(r)
     return perumtation(r)
+
+def generateKeys(key):
+    if (len(key) != 64):
+        raise Exception('Key not adequate length (64)')
+    keys=[]
+    l,r=setBits(key,tables('PCL')),setBits(key,tables('PCR'))
+    for i in range(16):
+        l, r = roundShift(l, getShiftAmmount(i+1), 1), roundShift(r, getShiftAmmount(i+1), 1)
+        keys.append(setBits(l+r,tables('PC2')))
+    return keys
 
 
 def encode(pt, key):
     if (len(pt) != 64):
         raise Exception('Plain text is not of 64 length')
     if (len(key) != 64):
-        raise Exception('Key not adequate length (56)')
+        raise Exception('Key not adequate length (64)')
     pt = initial_permutation(pt)
-    k1, k2 = keyManufactory(key, getShiftAmmount(1), 1)
-    key = k1 + k2
+    keys=generateKeys(key)
     for i in range(16):
-
-        keyEncode = keyTransformation(key, getShiftAmmount(i+1), 1)
         l, r = pt[:32], pt[32:]
-        pt = r + xor(l, feistel(r, keyEncode),32)
-        if (i==1):
-            print('zdravo')
+        pt = r + xor(l, feistel(r, keys[i]), 32)
     return pt
 
+def decode(pt, key):
+    if (len(pt) != 64):
+        raise Exception('Plain text is not of 64 length')
+    if (len(key) != 64):
+        print(len(key))
+        raise Exception('Key not adequate length (64)')
+    pt = inverse_initial_permutation(pt)
+    keys=generateKeys(key)
+    for i in range(16):
+        l, r = pt[:32], pt[32:]
+        pt = r + xor(l, feistel(r, keys[-i]), 32)
 
+    return pt
+def encode1(pt, key):
+    if (len(pt) != 64):
+        raise Exception('Plain text is not of 64 length')
+    if (len(key) != 64):
+        raise Exception('Key not adequate length (64)')
+    pt = initial_permutation(pt) #
+    k1, k2 = keyManufactory(key, getShiftAmmount(1), 1) #
+    key = k1 + k2
+
+    for i in range(1,16):
+        keyEncode = keyTransformation(key, getShiftAmmount(i + 1), 1)
+        l, r = pt[:32], pt[32:]
+        pt = r + xor(l, feistel(r, keyEncode), 32)
+        k1, k2 = roundShift(key[:28],i,1),roundShift(key[28:],i,1)
+        key=k1+k2
+
+    for i in range(8):
+        key=key[:(i+1)*8]+'0'+key[(i+1)*8:]
+    return pt,key
+
+
+def decode1(pt, key):
+    if (len(pt) != 64):
+        raise Exception('Plain text is not of 64 length')
+    if (len(key) != 64):
+        print(len(key))
+        raise Exception('Key not adequate length (64)')
+    pt = inverse_initial_permutation(pt)
+    for i in range(16):
+
+        if (i != 0):
+            keyEncode = keyTransformation(key, getShiftAmmount(i + 1), -1)
+        else:
+            keyEncode = keyTransformation(key, 0, -1)
+        l, r = pt[:32], pt[32:]
+        pt = r + xor(l, feistel(r, keyEncode), 32)
+        k1, k2 = roundShift(key[:28], i, -1), roundShift(key[28:], i, -1)
+        key = k1 + k2
+
+    return pt
+
+def generateEmptyString():
+    new=''
+    for i in range(64):
+        new+='0'
+    return new
 if __name__ == "__main__":
     generated = '1001111111011101110100011001010000111101100100110000010111001101'
-    # print(len(expansion(generated[:32])))
     key = '1000110101011101111010101000000110101111010111010001011000000111'
-    s_box = '000110100001101110010110110111011111100010001001'
+    empty='0000000000000000000000000000000000000000000000000000000000000000'
 
-    # print(int(xor('10101','10101'),2))
-    # print(s_boxes(s_box))
-    # print(leftRoundShift('123456789',3))
-    # print(rightRoundShift('123456789',3))
-    # print(rightRoundShift(leftRoundShift('123456789',3),3))
-    print(encode(generated,key))
+    encoded= encode(generated, empty)
+    print(f'Original {generated}')
+    print(f'Encoded {encoded}')
+    decoded=decode(encoded,empty)
+    print(f'Decoded {decoded}')
+    print(generated==decoded)
+    w=0
+    for a,b in zip(encoded,decoded):
+        if a!=b:
+            w+=1
+    print(w)
+
+
