@@ -292,21 +292,31 @@ def typeOfKey(key):
             return 'Possible Weak'
     return 'Normal '
 
+
 def fromBinaryToHex(bits):
-    return str(hex(int(bits,2))).split('x')[1].upper()
+    return str(hex(int(bits, 2))).split('x')[1].upper()
+
 
 def fromHexToBinary(hex):
-    return str(bin(int(hex,16))).split('b')[1]
+    return str(bin(int(hex, 16))).split('b')[1]
+
+
 def fromDecToHex(dec):
     return str(hex(dec)).split('x')[1]
 
+
 def fromBinaryToDec(bits):
-    return str(int(bits,2))
+    return str(int(bits, 2))
+
 
 def fromDecToBinary(dec):
     return str(bin(dec)).split('b')[1]
+
+
 def fromHexToDec(hex):
-    return str(int(hex,16)).split('x')[1]
+    return str(int(hex, 16)).split('x')[1]
+
+
 def encode1(pt, key):
     if (len(pt) != 64):
         raise Exception('Plain text is not of 64 length')
@@ -356,22 +366,51 @@ def generateEmptyString():
     return new
 
 
-if __name__ == "__main__":
+def printTests(type, flag):
     generated = '1001111111011101110100011001010000111101100100110000010111001101'
     key = '1000110101011101111010101000000110101111010111010001011000000111'
     empty = '0000000000000000000000000000000000000000000000000000000000000000'
-
+    generated=getRandom_N(64)
+    key=getRandom_N(64)
     encoded = encode(generated, empty)
-    print(f'Original {generated}')
-    print(f'Encoded {encoded}')
     decoded = decode(encoded, empty)
-    print(f'Decoded {decoded}')
-    print(generated == decoded)
+
+    if (type == 'hex' or type == '2'):
+        generated = fromBinaryToHex(generated)
+        key = fromBinaryToHex(key)
+        empty = fromBinaryToHex(empty)
+        encoded = fromBinaryToHex(encoded)
+        decoded = fromBinaryToHex(decoded)
+    if (type == 'dec' or type == '1'):
+        generated = fromBinaryToDec(generated)
+        key = fromBinaryToDec(key)
+        empty = fromBinaryToDec(empty)
+        encoded = fromBinaryToDec(encoded)
+        decoded = fromBinaryToDec(decoded)
     w = 0
     for a, b in zip(encoded, decoded):
-        if a != b:
+        if a == b:
             w += 1
-    print(w)
-    print(typeOfKey(fromBinaryToHex(key)))
-    print(fromBinaryToHex(key))
-    print(fromHexToBinary('2a'))
+    if (flag == 1):
+        print(f'Original {generated}')
+        print(f'Encoded {encoded}')
+        print(f'Decoded {decoded}')
+        print(f'Same {generated == decoded}')
+        print(f'Wrong predicted {w}')
+        print(f'Len {len(generated)}')
+    else:
+        return w
+
+
+def testingAverage(n):
+    scores = [0, 0, 0]
+    for i in range(n):
+        for t in range(3):
+            scores[0] += printTests(t, 0)
+    print(f'Avg score binary = {scores[0]/n}')
+    print(f'Avg score dec = {scores[1] / n}')
+    print(f'Avg score hex = {scores[2] / n}')
+
+
+if __name__ == "__main__":
+   testingAverage(100)
