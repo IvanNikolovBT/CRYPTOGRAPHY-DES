@@ -264,23 +264,49 @@ def decode(pt, key):
 
 
 def typeOfKey(key):
-    WK = ['0101010101010101', 'FEFEFEFEFEFEFEFE ',
-          'E0E0E0E0F1F1F1F1', '1F1F1F1F0E0E0E0E']
-    SWK = ['011F011F010E010E', '1F011F010E010E01',
-           '01E001E001F101F1', 'E001E001F101F101',
-           '01FE01FE01FE01FE', 'FE01FE01FE01FE01',
-           '1FE01FE00EF10EF1', 'E01FE01FF10EF10E',
-           '1FFE1FFE0EFE0EFE', 'FE1FFE1FFE0EFE0E',
-           'E0FEE0FEF1FEF1FE', 'FEE0FEE0FEF1FEF1']
-    PWK=[]
+    WK = ['0101010101010101', 'FEFEFEFEFEFEFEFE ', 'E0E0E0E0F1F1F1F1', '1F1F1F1F0E0E0E0E']
+    SWK = ['011F011F010E010E', '1F011F010E010E01', '01E001E001F101F1', 'E001E001F101F101',
+           '01FE01FE01FE01FE', 'FE01FE01FE01FE01', '1FE01FE00EF10EF1', 'E01FE01FF10EF10E',
+           '1FFE1FFE0EFE0EFE', 'FE1FFE1FFE0EFE0E', 'E0FEE0FEF1FEF1FE', 'FEE0FEE0FEF1FEF1']
+    PWK = ['01011F1F01010E0E', '1F1F01010E0E0101', 'E0E01F1FF1F10E0E', '0101E0E00101F1F1',
+           '1F1FE0E00E0EF1F1', 'E0E0FEFEF1F1FEFE', '0101FEFE0101FEFE', '1F1FFEFE0E0EFEFE',
+           'E0FE011FF1FE010E', '011F1F01010E0E01', '1FE001FE0EF101FE', 'E0FE1F01F1FE0E01',
+           '011FE0FE010EF1FE', '1FE0E01F0EF1F10E', 'E0FEFEE0F1FEFEF1', '011FFEE0010EFEF1',
+           '1FE0FE010EF1FE01', 'FE0101FEFE0101FE', '01E01FFE01F10EFE', '1FFE01E00EFE01F1',
+           'FE011FE0FE010EF1', 'FE01E01FFE01F10E', '1FFEE0010EFEF101', 'FE1F01E0FE0E01F1',
+           '01E0E00101F1F101', '1FFEFE1F0EFEFE0E', 'FE1FE001FE0EF101', '01E0FE1F01F1FE0E',
+           'E00101E0F10101F1', 'FE1F1FFEFE0E0EFE', '01FE1FE001FE0EF1', 'E0011FFEF1010EFE',
+           'FEE0011FFEF1010E', '01FEE01F01FEF10E', 'E001FE1FF101FE0E', 'FEE01F01FEF10E01',
+           '01FEFE0101FEFE01', 'E01F01FEF10E01FE', 'FEE0E0FEFEF1F1FE', '1F01011F0E01010E',
+           'E01F1FE0F10E0EF1', 'FEFE0101FEFE0101', '1F01E0FE0E01F1FE', 'E01FFE01F10EFE01',
+           'FEFE1F1FFEFE0E0E', '1F01FEE00E01FEF1', 'E0E00101F1F10101', 'FEFEE0E0FEFEF1F1']
 
-    broj=0
-    for i in range(len(SWK)):
-        for s in SWK:
-            if SWK[i]==s:
-                broj+=1
-    print(broj)
+    for w in WK:
+        if w == key:
+            return 'Weak'
+    for w in SWK:
+        if w == key:
+            return 'Semi Weak'
+    for w in PWK:
+        if w == key:
+            return 'Possible Weak'
+    return 'Normal '
 
+def fromBinaryToHex(bits):
+    return str(hex(int(bits,2))).split('x')[1].upper()
+
+def fromHexToBinary(hex):
+    return str(bin(int(hex,16))).split('b')[1]
+def fromDecToHex(dec):
+    return str(hex(dec)).split('x')[1]
+
+def fromBinaryToDec(bits):
+    return str(int(bits,2))
+
+def fromDecToBinary(dec):
+    return str(bin(dec)).split('b')[1]
+def fromHexToDec(hex):
+    return str(int(hex,16)).split('x')[1]
 def encode1(pt, key):
     if (len(pt) != 64):
         raise Exception('Plain text is not of 64 length')
@@ -346,4 +372,6 @@ if __name__ == "__main__":
         if a != b:
             w += 1
     print(w)
-    print(typeOfKey(key))
+    print(typeOfKey(fromBinaryToHex(key)))
+    print(fromBinaryToHex(key))
+    print(fromHexToBinary('2a'))
