@@ -1,6 +1,8 @@
 import random
 
-
+GENERATED = '1001111111011101110100011001010000111101100100110000010111001101'
+KEY = '1000110101011101111010101000000110101111010111010001011000000111'
+EMPTY = '0000000000000000000000000000000000000000000000000000000000000000'
 def tables(table):
     if (table == 'IP'):
         '''Used in the inital permutation'''
@@ -119,9 +121,11 @@ def tables(table):
         return S8
 
 
-def getShiftAmmount(round):
-    if (round == 1 or round == 2 or round == 9 or round == 16):
+def getShiftAmmount(round,flag):
+    if ((round == 1 and flag==1) or round == 2 or round == 9 or round == 16):
         return 1
+    if flag==-1 and round==1:
+        return 0
     return 2
 
 
@@ -133,7 +137,7 @@ def getRandom_N(r):
 
 
 def roundShift(bits, round, flag):
-    amount = getShiftAmmount(round) % len(bits)
+    amount = getShiftAmmount(round,flag) % len(bits)
     return bits[flag * amount:] + bits[:flag * amount]
 
 
@@ -230,8 +234,9 @@ def generateKeys(key):
         raise Exception('Key not adequate length (64)')
     keys = []
     l, r = setBits(key, tables('PCL')), setBits(key, tables('PCR'))
+    og=l+r
     for i in range(16):
-        l, r = roundShift(l, getShiftAmmount(i + 1), 1), roundShift(r, getShiftAmmount(i + 1), 1)
+        l, r = roundShift(l, i + 1,1), roundShift(r, i + 1,1)
         keys.append(setBits(l + r, tables('PC2')))
     return keys
 
@@ -327,39 +332,46 @@ def generateEmptyString():
 
 
 def printTests(type, flag):
-    generated = '1001111111011101110100011001010000111101100100110000010111001101'
-    key = '1000110101011101111010101000000110101111010111010001011000000111'
-    empty = '0000000000000000000000000000000000000000000000000000000000000000'
+
     #generated = getRandom_N(64)
     #key = getRandom_N(64)
-    encoded = encode(generated, empty)
-    decoded = decode(encoded, empty)
+    GENERATED = '1001111111011101110100011001010000111101100100110000010111001101'
+    KEY = '1000110101011101111010101000000110101111010111010001011000000111'
+    EMPTY = '0000000000000000000000000000000000000000000000000000000000000000'
+    encoded = encode(GENERATED, EMPTY)
+    decoded = decode(encoded, EMPTY)
 
     if (type == 'hex' or type == '2'):
-        generated = fromBinaryToHex(generated)
-        key = fromBinaryToHex(key)
-        empty = fromBinaryToHex(empty)
+        GENERATED = fromBinaryToHex(GENERATED)
+        KEY = fromBinaryToHex(KEY)
+        EMPTY = fromBinaryToHex(EMPTY)
         encoded = fromBinaryToHex(encoded)
         decoded = fromBinaryToHex(decoded)
     if (type == 'dec' or type == '1'):
-        generated = fromBinaryToDec(generated)
-        key = fromBinaryToDec(key)
-        empty = fromBinaryToDec(empty)
+        GENERATED = fromBinaryToDec(GENERATED)
+        KEY = fromBinaryToDec(KEY)
+        EMPTY = fromBinaryToDec(EMPTY)
         encoded = fromBinaryToDec(encoded)
         decoded = fromBinaryToDec(decoded)
-    w = 0
-    for a, b in zip(encoded, decoded):
-        if a == b:
-            w += 1
+
+    w = getError(decoded, encoded)
     if (flag == 1):
-        print(f'Original {generated}')
+        print(f'Original {GENERATED}')
         print(f'Encoded {encoded}')
         print(f'Decoded {decoded}')
-        print(f'Same {generated == decoded}')
+        print(f'Same {GENERATED == decoded}')
         print(f'Wrong predicted {w}')
-        print(f'Len {len(generated)}')
+        print(f'Len {len(GENERATED)}')
     else:
         return w
+
+
+def getError(decoded, encoded):
+    w=0
+    for a, b in zip(encoded, decoded):
+        if a != b:
+            w += 1
+    return w
 
 
 def testingAverage(n):
@@ -371,10 +383,15 @@ def testingAverage(n):
     print(f'Avg score dec = {scores[1] / n}')
     print(f'Avg score hex = {scores[2] / n}')
 
+def testRoundShift(key1,key2):
+    for i in range(len(key1)):
+        if(key1[i]!=key2[i]):
+            print(i)
 
 if __name__ == "__main__":
     #testingAverage(100)
 
     #swap bits test
     bits='1010001'
-    print(roundShift(bits,3,-1))
+    encodeded=encode(GENERATED,KEY)
+    print(getError(decode(encodeded,KEY),GENERATED))
