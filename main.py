@@ -173,16 +173,19 @@ def inverse_initial_permutation(bits):
 
 
 def xor(bits, key, num):
+    #good
     if (len(bits) != len(key)):
         raise Exception("Can`t XOR if they are different lengths")
     return paddWord(str(bin(int(bits, 2) ^ int(key, 2))).split('b')[1], num)
 
 
 def setSbox(bits, table):
+    #good
     return tables(table)[int(bits[0] + bits[5], 2)][int(bits[1:5], 2)]
 
 
 def s_boxes(bits):
+    #good
     if (len(bits) != 48):
         raise Exception('Can`t do s boxes, not the same length')
     newbits = ""
@@ -195,27 +198,15 @@ def s_boxes(bits):
 
 
 def paddWord(word, n):
+    #good
     while (len(word) != n):
         word = '0' + word
     return word
 
 
 def perumtation(word):
+    #good
     return setBits(word, tables('P'))
-
-
-def keyTransformation(key, i, flag):
-    l, r = key[:29], key[29:]
-    l = roundShift(l, i, flag)
-    r = roundShift(r, i, flag)
-    return setBits(l + r, tables('PC2'))
-
-
-def keyManufactory(key, i, flag):
-    l, r = setBits(key, tables('PCL')), setBits(key, tables('PCR'))
-    l = roundShift(l, i, flag)
-    r = roundShift(r, i, flag)
-    return l, r
 
 
 def feistel(r, key):
@@ -387,10 +378,7 @@ def testRoundShift(key1,key2):
     for i in range(len(key1)):
         if(key1[i]!=key2[i]):
             print(i)
-def print_len(bits):
-    for i in range(8):
-        a=bits[6 * i:6 * i + 6]
-        print(len(a))
+
 
 
 
@@ -398,11 +386,10 @@ if __name__ == "__main__":
     #testingAverage(100)
 
     #swap bits test
-    #bits='1010001'
-    #a=xor(fromDecToBinary(10),fromDecToBinary(10),len(fromDecToBinary(10)))
-    #encodeded=encode(GENERATED,KEY)
+    bits='1010001'
+    a=xor(fromDecToBinary(10),fromDecToBinary(10),len(fromDecToBinary(10)))
+    encodeded=encode(GENERATED,KEY)
 
-    print_len('010100111101110100110011011100101100111000111101')
-    #print(getError(decode(encodeded,KEY),GENERATED))
-    #print(fromBinaryToHex(encodeded))
+    print(getError(decode(encodeded,KEY),GENERATED))
+    print(fromBinaryToHex(encodeded))
 
