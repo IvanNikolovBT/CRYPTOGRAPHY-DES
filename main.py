@@ -347,18 +347,7 @@ def getError(decoded, encoded):
 
 
 if __name__ == "__main__":
-    #testingAverage(100)
 
-    #swap bits test
-    bits='1010001'
-    encodeded=encode(GENERATED,KEY)
-
-    print(getError(decode(encodeded,KEY),GENERATED))
-    print(fromBinaryToHex(encodeded))
-    getError("1001110000000111010001000110110101100010010001001101110111000110",'0110110000001011100010001001111010010001100010001110111011001001')
-    print('6C0B889E9188EEC9'=='6C0B889E9188EEC9')
-    decoded=decode(encodeded,KEY)
-    print(decoded==GENERATED)
     c=0
     for i in range(100):
         text=getRandom_N(64)
@@ -367,4 +356,4 @@ if __name__ == "__main__":
         decoded=decode(encoded,key)
         if decoded==text:
             c+=1
-    print(c)
+    print(f'From 100 random generated keys and plaintexts, we have correctly encoded and decoded {c}')
