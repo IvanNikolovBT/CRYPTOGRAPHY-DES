@@ -1,8 +1,49 @@
 import random
 
-GENERATED = '1001111111011101110100011001010000111101100100110000010111001101'
-KEY = '1000110101011101111010101000000110101111010111010001011000000111'
-EMPTY = '0000000000000000000000000000000000000000000000000000000000000000'
+
+class Constants:
+    def __init__(self):
+        self.GENERATED = '1001111111011101110100011001010000111101100100110000010111001101'
+        self.KEY = '1000110101011101111010101000000110101111010111010001011000000111'
+        self.EMPTY = '0000000000000000000000000000000000000000000000000000000000000000'
+
+    @property
+    def KEY2(self):
+        return self.KEY
+
+    @property
+    def GENERATED2(self):
+        return self.GENERATED
+
+    @property
+    def EMPTY2(self):
+        return self.EMPTY
+
+    @property
+    def KEY16(self):
+        return fromBinaryToHex(self.KEY)
+
+    @property
+    def GENERATED16(self):
+        return fromBinaryToHex(self.GENERATED)
+
+    @property
+    def EMPTY16(self):
+        return fromBinaryToHex(self.EMPTY)
+
+    @property
+    def KEY(self):
+        return fromBinaryToHex(self.KEY)
+
+    @property
+    def GENERATED(self):
+        return fromBinaryToHex(self.GENERATED)
+
+    @property
+    def EMPTY(self):
+        return fromBinaryToHex(self.EMPTY)
+
+
 def tables(table):
     if (table == 'IP'):
         '''Used in the inital permutation'''
@@ -121,10 +162,10 @@ def tables(table):
         return S8
 
 
-def getShiftAmmount(round,flag):
-    if ((round == 1 and flag==1) or round == 2 or round == 9 or round == 16):
+def getShiftAmmount(round, flag):
+    if ((round == 1 and flag == 1) or round == 2 or round == 9 or round == 16):
         return 1
-    if flag==-1 and round==1:
+    if flag == -1 and round == 1:
         return 0
     return 2
 
@@ -137,12 +178,11 @@ def getRandom_N(r):
 
 
 def roundShift(bits, round, flag):
-    amount = getShiftAmmount(round,flag) % len(bits)
+    amount = getShiftAmmount(round, flag) % len(bits)
     return bits[flag * amount:] + bits[:flag * amount]
 
 
 def setBits(bits, table):
-
     n = len(table)
     newbits = ""
     for i in range(n):
@@ -173,19 +213,16 @@ def inverse_initial_permutation(bits):
 
 
 def xor(bits, key, num):
-
     if (len(bits) != len(key)):
         raise Exception("Can`t XOR if they are different lengths")
     return paddWord(str(bin(int(bits, 2) ^ int(key, 2))).split('b')[1], num)
 
 
 def setSbox(bits, table):
-
     return tables(table)[int(bits[0] + bits[5], 2)][int(bits[1:5], 2)]
 
 
 def s_boxes(bits):
-
     if (len(bits) != 48):
         raise Exception('Can`t do s boxes, not the same length')
     newbits = ""
@@ -198,19 +235,16 @@ def s_boxes(bits):
 
 
 def paddWord(word, n):
-
     while (len(word) != n):
         word = '0' + word
     return word
 
 
 def perumtation(word):
-
     return setBits(word, tables('P'))
 
 
 def feistel(r, key):
-
     if (len(r) != 32):
         raise Exception('Right side is not 32')
     if (len(key) != 48):
@@ -218,7 +252,7 @@ def feistel(r, key):
     r = expansion(r)
     r = xor(r, key, 48)
     r = s_boxes(r)
-    a=perumtation(r)
+    a = perumtation(r)
     return a
 
 
@@ -228,7 +262,7 @@ def generateKeys(key):
     keys = []
     l, r = setBits(key, tables('PCL')), setBits(key, tables('PCR'))
     for i in range(16):
-        l, r = roundShift(l, i + 1,1), roundShift(r, i + 1,1)
+        l, r = roundShift(l, i + 1, 1), roundShift(r, i + 1, 1)
         keys.append(setBits(l + r, tables('PC2')))
     return keys
 
@@ -242,9 +276,10 @@ def encode(pt, key):
     keys = generateKeys(key)
     for i in range(16):
         l, r = pt[:32], pt[32:]
-        b=xor(l, feistel(r, keys[i]), 32)
+        b = xor(l, feistel(r, keys[i]), 32)
         pt = r + b
-    return inverse_initial_permutation(pt[32:]+pt[:32])
+    return inverse_initial_permutation(pt[32:] + pt[:32])
+
 
 def decode(pt, key):
     if (len(pt) != 64):
@@ -255,16 +290,9 @@ def decode(pt, key):
     keys = generateKeys(key)
     for i in range(16):
         l, r = pt[:32], pt[32:]
-        b=xor(l, feistel(r, keys[15-i]), 32)
+        b = xor(l, feistel(r, keys[15 - i]), 32)
         pt = r + b
-    return inverse_initial_permutation(pt[32:]+pt[:32])
-
-
-
-
-
-
-
+    return inverse_initial_permutation(pt[32:] + pt[:32])
 
 
 def typeOfKey(key):
@@ -321,7 +349,6 @@ def fromHexToDec(hex):
     return str(int(hex, 16)).split('x')[1]
 
 
-
 def generateEmptyString():
     new = ''
     for i in range(64):
@@ -331,29 +358,23 @@ def generateEmptyString():
 
 
 
-
-def getError(decoded, encoded):
-    w=0
-    for a, b in zip(encoded, decoded):
-        if a == b:
-            w += 1
-    return w
+def simulate_weak_keys():
+    print(f'The block cipher DES has a few specific keys termed "weak keys" and "semi-weak keys". These are keys that cause the encryption mode of DES to act identically to the decryption mode of DES (albeit potentially that of a different key).')
 
 
-
-
-
-
+def simulate100EncodingsAndDecodings():
+    c = 0
+    for i in range(100):
+        text = getRandom_N(64)
+        key = getRandom_N(64)
+        encoded = encode(text, key)
+        decoded = decode(encoded, key)
+        if decoded == text:
+            c += 1
+    print(f'From 100 random generated keys and plaintexts, we have correctly encoded and decoded {c}')
 
 
 if __name__ == "__main__":
+    const=Constants()
 
-    c=0
-    for i in range(100):
-        text=getRandom_N(64)
-        key=getRandom_N(64)
-        encoded=encode(text,key)
-        decoded=decode(encoded,key)
-        if decoded==text:
-            c+=1
-    print(f'From 100 random generated keys and plaintexts, we have correctly encoded and decoded {c}')
+    simulate_weak_keys()
