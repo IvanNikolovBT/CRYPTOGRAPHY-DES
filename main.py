@@ -210,14 +210,16 @@ def perumtation(word):
 
 
 def feistel(r, key):
+    #good
     if (len(r) != 32):
         raise Exception('Right side is not 32')
     if (len(key) != 48):
         raise Exception('Key is not 48')
     r = expansion(r) #
     r = xor(r, key, 48) #
-    r = s_boxes(r)
-    return perumtation(r)
+    r = s_boxes(r) #
+    a=perumtation(r)
+    return a #
 
 
 def generateKeys(key):
@@ -225,7 +227,6 @@ def generateKeys(key):
         raise Exception('Key not adequate length (64)')
     keys = []
     l, r = setBits(key, tables('PCL')), setBits(key, tables('PCR'))
-    og=l+r
     for i in range(16):
         l, r = roundShift(l, i + 1,1), roundShift(r, i + 1,1)
         keys.append(setBits(l + r, tables('PC2')))
@@ -241,8 +242,37 @@ def encode(pt, key):
     keys = generateKeys(key)
     for i in range(16):
         l, r = pt[:32], pt[32:]
-        pt = r + xor(l, feistel(r, keys[i]), 32)
-    return pt
+        if(i==3):
+            print("zdravo")
+        b=xor(l, feistel(r, keys[i]), 32)
+        pt = r + b
+        if(check(pt)):
+            print(f'Good {i+1}')
+        else:
+            print(f'Bad {i+1}')
+    return inverse_initial_permutation(pt[32:]+pt[:32])
+
+
+def check(pt):
+    correct=['1100 0000 0011 1001 1111 0010 1000 1100 0100 0111 1001 1011 0111 1110 0011 1111',
+        '0100 0111 1001 1011 0111 1110 0011 1111 1000 0110 1111 0001 0011 0001 1110 1001 ',
+        '1000 0110 1111 0001 0011 0001 1110 1001 1100 1001 1001 1001 1101 0001 0011 1110',
+        '1100 1001 1001 1001 1101 0001 0011 1110 0111 0011 0010 0110 0100 1100 1101 0101',
+        '0111 0011 0010 0110 0100 1100 1101 0101 0100 0101 0010 0000 0100 0010 1111 0101',
+        '0100 0101 0010 0000 0100 0010 1111 0101 1011 1001 0100 1100 1110 0010 1101 0001',
+        '1011 1001 0100 1100 1110 0010 1101 0001 1101 0100 0001 0001 1111 1100 0001 0101 ',
+        '1101 0100 0001 0001 1111 1100 0001 0101 1101 1110 1110 1000 1010 1110 0001 0011',
+        '1101 1110 1110 1000 1010 1110 0001 0011 0110 1101 1000 0100 0010 0001 0011 0011',
+        '0110 1101 1000 0100 0010 0001 0011 0011 0101 1011 0100 1111 1101 1110 1111 0010',
+        '0101 1011 0100 1111 1101 1110 1111 0010 1010 1100 0001 1100 1000 0111 0111 0101',
+        '1010 1100 0001 1100 1000 0111 0111 0101 0111 0000 0101 0110 1100 0010 1010 1100',
+        '0111 0000 0101 0110 1100 0010 1010 1100  1111 1100 0100 0001 1110 1111 0100 1010',
+        '1111 1100 0100 0001 1110 1111 0100 1010  1100 0001 0001 1000 0100 1001 1001 0010'
+        ]
+    for i in range(len(correct)):
+        if pt==''.join(correct[i].split(' ')):
+            return True
+    return False
 
 
 def decode(pt, key):
@@ -360,7 +390,7 @@ def printTests(type, flag):
 def getError(decoded, encoded):
     w=0
     for a, b in zip(encoded, decoded):
-        if a != b:
+        if a == b:
             w += 1
     return w
 
@@ -374,10 +404,7 @@ def testingAverage(n):
     print(f'Avg score dec = {scores[1] / n}')
     print(f'Avg score hex = {scores[2] / n}')
 
-def testRoundShift(key1,key2):
-    for i in range(len(key1)):
-        if(key1[i]!=key2[i]):
-            print(i)
+
 
 
 
@@ -387,9 +414,10 @@ if __name__ == "__main__":
 
     #swap bits test
     bits='1010001'
-    a=xor(fromDecToBinary(10),fromDecToBinary(10),len(fromDecToBinary(10)))
     encodeded=encode(GENERATED,KEY)
 
     print(getError(decode(encodeded,KEY),GENERATED))
     print(fromBinaryToHex(encodeded))
+    getError("1001110000000111010001000110110101100010010001001101110111000110",'0110110000001011100010001001111010010001100010001110111011001001')
+    print('6C0B889E9188EEC9'=='6C0B889E9188EEC9')
 
