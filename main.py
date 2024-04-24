@@ -138,6 +138,7 @@ def roundShift(bits, round, flag):
 
 
 def setBits(bits, table):
+    #good
     n = len(table)
     newbits = ""
     for i in range(n):
@@ -317,47 +318,6 @@ def fromHexToDec(hex):
     return str(int(hex, 16)).split('x')[1]
 
 
-def encode1(pt, key):
-    if (len(pt) != 64):
-        raise Exception('Plain text is not of 64 length')
-    if (len(key) != 64):
-        raise Exception('Key not adequate length (64)')
-    pt = initial_permutation(pt)  #
-    k1, k2 = keyManufactory(key, getShiftAmmount(1), 1)  #
-    key = k1 + k2
-
-    for i in range(1, 16):
-        keyEncode = keyTransformation(key, getShiftAmmount(i + 1), 1)
-        l, r = pt[:32], pt[32:]
-        pt = r + xor(l, feistel(r, keyEncode), 32)
-        k1, k2 = roundShift(key[:28], i, 1), roundShift(key[28:], i, 1)
-        key = k1 + k2
-
-    for i in range(8):
-        key = key[:(i + 1) * 8] + '0' + key[(i + 1) * 8:]
-    return pt, key
-
-
-def decode1(pt, key):
-    if (len(pt) != 64):
-        raise Exception('Plain text is not of 64 length')
-    if (len(key) != 64):
-        print(len(key))
-        raise Exception('Key not adequate length (64)')
-    pt = inverse_initial_permutation(pt)
-    for i in range(16):
-
-        if (i != 0):
-            keyEncode = keyTransformation(key, getShiftAmmount(i + 1), -1)
-        else:
-            keyEncode = keyTransformation(key, 0, -1)
-        l, r = pt[:32], pt[32:]
-        pt = r + xor(l, feistel(r, keyEncode), 32)
-        k1, k2 = roundShift(key[:28], i, -1), roundShift(key[28:], i, -1)
-        key = k1 + k2
-
-    return pt
-
 
 def generateEmptyString():
     new = ''
@@ -370,8 +330,8 @@ def printTests(type, flag):
     generated = '1001111111011101110100011001010000111101100100110000010111001101'
     key = '1000110101011101111010101000000110101111010111010001011000000111'
     empty = '0000000000000000000000000000000000000000000000000000000000000000'
-    generated=getRandom_N(64)
-    key=getRandom_N(64)
+    #generated = getRandom_N(64)
+    #key = getRandom_N(64)
     encoded = encode(generated, empty)
     decoded = decode(encoded, empty)
 
@@ -407,10 +367,14 @@ def testingAverage(n):
     for i in range(n):
         for t in range(3):
             scores[0] += printTests(t, 0)
-    print(f'Avg score binary = {scores[0]/n}')
+    print(f'Avg score binary = {scores[0] / n}')
     print(f'Avg score dec = {scores[1] / n}')
     print(f'Avg score hex = {scores[2] / n}')
 
 
 if __name__ == "__main__":
-   testingAverage(100)
+    #testingAverage(100)
+
+    #swap bits test
+    bits='1010001'
+    print(roundShift(bits,3,-1))
