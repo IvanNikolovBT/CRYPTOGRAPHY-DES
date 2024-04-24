@@ -174,7 +174,7 @@ def inverse_initial_permutation(bits):
 
 def xor(bits, key, num):
     if (len(bits) != len(key)):
-        raise Exception("Can`t shift if they are different lengths")
+        raise Exception("Can`t XOR if they are different lengths")
     return paddWord(str(bin(int(bits, 2) ^ int(key, 2))).split('b')[1], num)
 
 
@@ -187,7 +187,7 @@ def s_boxes(bits):
         raise Exception('Can`t do s boxes, not the same length')
     newbits = ""
     for i in range(8):
-        word = str(bin(setSbox(bits[4 * i:4 * i + 6], f'S{i + 1}'))).split('b')[1]
+        word = str(bin(setSbox(bits[6 * i:6 * i + 6], f'S{i + 1}'))).split('b')[1]
         if (len(word) != 4):
             word = paddWord(word, 4)
         newbits += word
@@ -223,8 +223,8 @@ def feistel(r, key):
         raise Exception('Right side is not 32')
     if (len(key) != 48):
         raise Exception('Key is not 48')
-    r = expansion(r)
-    r = xor(r, key, 48)
+    r = expansion(r) #
+    r = xor(r, key, 48) #
     r = s_boxes(r)
     return perumtation(r)
 
@@ -387,11 +387,22 @@ def testRoundShift(key1,key2):
     for i in range(len(key1)):
         if(key1[i]!=key2[i]):
             print(i)
+def print_len(bits):
+    for i in range(8):
+        a=bits[6 * i:6 * i + 6]
+        print(len(a))
+
+
 
 if __name__ == "__main__":
     #testingAverage(100)
 
     #swap bits test
-    bits='1010001'
-    encodeded=encode(GENERATED,KEY)
-    print(getError(decode(encodeded,KEY),GENERATED))
+    #bits='1010001'
+    #a=xor(fromDecToBinary(10),fromDecToBinary(10),len(fromDecToBinary(10)))
+    #encodeded=encode(GENERATED,KEY)
+
+    print_len('010100111101110100110011011100101100111000111101')
+    #print(getError(decode(encodeded,KEY),GENERATED))
+    #print(fromBinaryToHex(encodeded))
+
