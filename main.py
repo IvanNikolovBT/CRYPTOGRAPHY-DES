@@ -142,7 +142,7 @@ def roundShift(bits, round, flag):
 
 
 def setBits(bits, table):
-    #good
+
     n = len(table)
     newbits = ""
     for i in range(n):
@@ -173,19 +173,19 @@ def inverse_initial_permutation(bits):
 
 
 def xor(bits, key, num):
-    #good
+
     if (len(bits) != len(key)):
         raise Exception("Can`t XOR if they are different lengths")
     return paddWord(str(bin(int(bits, 2) ^ int(key, 2))).split('b')[1], num)
 
 
 def setSbox(bits, table):
-    #good
+
     return tables(table)[int(bits[0] + bits[5], 2)][int(bits[1:5], 2)]
 
 
 def s_boxes(bits):
-    #good
+
     if (len(bits) != 48):
         raise Exception('Can`t do s boxes, not the same length')
     newbits = ""
@@ -198,28 +198,28 @@ def s_boxes(bits):
 
 
 def paddWord(word, n):
-    #good
+
     while (len(word) != n):
         word = '0' + word
     return word
 
 
 def perumtation(word):
-    #good
+
     return setBits(word, tables('P'))
 
 
 def feistel(r, key):
-    #good
+
     if (len(r) != 32):
         raise Exception('Right side is not 32')
     if (len(key) != 48):
         raise Exception('Key is not 48')
-    r = expansion(r) #
-    r = xor(r, key, 48) #
-    r = s_boxes(r) #
+    r = expansion(r)
+    r = xor(r, key, 48)
+    r = s_boxes(r)
     a=perumtation(r)
-    return a #
+    return a
 
 
 def generateKeys(key):
@@ -242,52 +242,29 @@ def encode(pt, key):
     keys = generateKeys(key)
     for i in range(16):
         l, r = pt[:32], pt[32:]
-        if(i==3):
-            print("zdravo")
         b=xor(l, feistel(r, keys[i]), 32)
         pt = r + b
-        if(check(pt)):
-            print(f'Good {i+1}')
-        else:
-            print(f'Bad {i+1}')
     return inverse_initial_permutation(pt[32:]+pt[:32])
-
-
-def check(pt):
-    correct=['1100 0000 0011 1001 1111 0010 1000 1100 0100 0111 1001 1011 0111 1110 0011 1111',
-        '0100 0111 1001 1011 0111 1110 0011 1111 1000 0110 1111 0001 0011 0001 1110 1001 ',
-        '1000 0110 1111 0001 0011 0001 1110 1001 1100 1001 1001 1001 1101 0001 0011 1110',
-        '1100 1001 1001 1001 1101 0001 0011 1110 0111 0011 0010 0110 0100 1100 1101 0101',
-        '0111 0011 0010 0110 0100 1100 1101 0101 0100 0101 0010 0000 0100 0010 1111 0101',
-        '0100 0101 0010 0000 0100 0010 1111 0101 1011 1001 0100 1100 1110 0010 1101 0001',
-        '1011 1001 0100 1100 1110 0010 1101 0001 1101 0100 0001 0001 1111 1100 0001 0101 ',
-        '1101 0100 0001 0001 1111 1100 0001 0101 1101 1110 1110 1000 1010 1110 0001 0011',
-        '1101 1110 1110 1000 1010 1110 0001 0011 0110 1101 1000 0100 0010 0001 0011 0011',
-        '0110 1101 1000 0100 0010 0001 0011 0011 0101 1011 0100 1111 1101 1110 1111 0010',
-        '0101 1011 0100 1111 1101 1110 1111 0010 1010 1100 0001 1100 1000 0111 0111 0101',
-        '1010 1100 0001 1100 1000 0111 0111 0101 0111 0000 0101 0110 1100 0010 1010 1100',
-        '0111 0000 0101 0110 1100 0010 1010 1100  1111 1100 0100 0001 1110 1111 0100 1010',
-        '1111 1100 0100 0001 1110 1111 0100 1010  1100 0001 0001 1000 0100 1001 1001 0010'
-        ]
-    for i in range(len(correct)):
-        if pt==''.join(correct[i].split(' ')):
-            return True
-    return False
-
 
 def decode(pt, key):
     if (len(pt) != 64):
         raise Exception('Plain text is not of 64 length')
     if (len(key) != 64):
-        print(len(key))
         raise Exception('Key not adequate length (64)')
-    pt = inverse_initial_permutation(pt)
+    pt = initial_permutation(pt)
     keys = generateKeys(key)
     for i in range(16):
         l, r = pt[:32], pt[32:]
-        pt = r + xor(l, feistel(r, keys[-i]), 32)
+        b=xor(l, feistel(r, keys[15-i]), 32)
+        pt = r + b
+    return inverse_initial_permutation(pt[32:]+pt[:32])
 
-    return pt
+
+
+
+
+
+
 
 
 def typeOfKey(key):
@@ -352,39 +329,7 @@ def generateEmptyString():
     return new
 
 
-def printTests(type, flag):
 
-    #generated = getRandom_N(64)
-    #key = getRandom_N(64)
-    GENERATED = '1001111111011101110100011001010000111101100100110000010111001101'
-    KEY = '1000110101011101111010101000000110101111010111010001011000000111'
-    EMPTY = '0000000000000000000000000000000000000000000000000000000000000000'
-    encoded = encode(GENERATED, EMPTY)
-    decoded = decode(encoded, EMPTY)
-
-    if (type == 'hex' or type == '2'):
-        GENERATED = fromBinaryToHex(GENERATED)
-        KEY = fromBinaryToHex(KEY)
-        EMPTY = fromBinaryToHex(EMPTY)
-        encoded = fromBinaryToHex(encoded)
-        decoded = fromBinaryToHex(decoded)
-    if (type == 'dec' or type == '1'):
-        GENERATED = fromBinaryToDec(GENERATED)
-        KEY = fromBinaryToDec(KEY)
-        EMPTY = fromBinaryToDec(EMPTY)
-        encoded = fromBinaryToDec(encoded)
-        decoded = fromBinaryToDec(decoded)
-
-    w = getError(decoded, encoded)
-    if (flag == 1):
-        print(f'Original {GENERATED}')
-        print(f'Encoded {encoded}')
-        print(f'Decoded {decoded}')
-        print(f'Same {GENERATED == decoded}')
-        print(f'Wrong predicted {w}')
-        print(f'Len {len(GENERATED)}')
-    else:
-        return w
 
 
 def getError(decoded, encoded):
@@ -395,14 +340,6 @@ def getError(decoded, encoded):
     return w
 
 
-def testingAverage(n):
-    scores = [0, 0, 0]
-    for i in range(n):
-        for t in range(3):
-            scores[0] += printTests(t, 0)
-    print(f'Avg score binary = {scores[0] / n}')
-    print(f'Avg score dec = {scores[1] / n}')
-    print(f'Avg score hex = {scores[2] / n}')
 
 
 
@@ -420,4 +357,14 @@ if __name__ == "__main__":
     print(fromBinaryToHex(encodeded))
     getError("1001110000000111010001000110110101100010010001001101110111000110",'0110110000001011100010001001111010010001100010001110111011001001')
     print('6C0B889E9188EEC9'=='6C0B889E9188EEC9')
-
+    decoded=decode(encodeded,KEY)
+    print(decoded==GENERATED)
+    c=0
+    for i in range(100):
+        text=getRandom_N(64)
+        key=getRandom_N(64)
+        encoded=encode(text,key)
+        decoded=decode(encoded,key)
+        if decoded==text:
+            c+=1
+    print(c)
