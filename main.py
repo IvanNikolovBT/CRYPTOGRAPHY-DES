@@ -3,47 +3,67 @@ import random
 
 class Constants:
     def __init__(self):
-        self.GENERATED = '1001111111011101110100011001010000111101100100110000010111001101'
-        self.KEY = '1000110101011101111010101000000110101111010111010001011000000111'
-        self.EMPTY = '0000000000000000000000000000000000000000000000000000000000000000'
+        print(f'Constants are KEY,GENERATED and EMPTY')
 
     @property
     def KEY2(self):
-        return self.KEY
+        return '1000110101011101111010101000000110101111010111010001011000000111'
 
     @property
     def GENERATED2(self):
-        return self.GENERATED
+        return '1001111111011101110100011001010000111101100100110000010111001101'
 
     @property
     def EMPTY2(self):
-        return self.EMPTY
+        return '0000000000000000000000000000000000000000000000000000000000000000'
 
     @property
     def KEY16(self):
-        return fromBinaryToHex(self.KEY)
+        return fromBinaryToHex(self.KEY2)
 
     @property
     def GENERATED16(self):
-        return fromBinaryToHex(self.GENERATED)
+        return fromBinaryToHex(self.GENERATED2)
 
     @property
     def EMPTY16(self):
-        return fromBinaryToHex(self.EMPTY)
+        return fromBinaryToHex(self.EMPTY2)
 
     @property
     def KEY(self):
-        return fromBinaryToHex(self.KEY)
+        return fromBinaryToDec(self.KEY2)
 
     @property
     def GENERATED(self):
-        return fromBinaryToHex(self.GENERATED)
+        return fromBinaryToDec(self.GENERATED2)
 
     @property
     def EMPTY(self):
-        return fromBinaryToHex(self.EMPTY)
+        return fromBinaryToDec(self.EMPTY2)
+    @property
+    def WEAK_KEYS(self):
+        return  ['0101010101010101', 'FEFEFEFEFEFEFEFE ', 'E0E0E0E0F1F1F1F1', '1F1F1F1F0E0E0E0E']
+    @property
+    def SEMI_WEAK_KEYS(self):
+        return  ['011F011F010E010E', '1F011F010E010E01', '01E001E001F101F1', 'E001E001F101F101',
+           '01FE01FE01FE01FE', 'FE01FE01FE01FE01', '1FE01FE00EF10EF1', 'E01FE01FF10EF10E',
+           '1FFE1FFE0EFE0EFE', 'FE1FFE1FFE0EFE0E', 'E0FEE0FEF1FEF1FE', 'FEE0FEE0FEF1FEF1']
+    @property
+    def POSSIBLE_WEAK_KEYS(self):
+        return ['01011F1F01010E0E', '1F1F01010E0E0101', 'E0E01F1FF1F10E0E', '0101E0E00101F1F1',
+           '1F1FE0E00E0EF1F1', 'E0E0FEFEF1F1FEFE', '0101FEFE0101FEFE', '1F1FFEFE0E0EFEFE',
+           'E0FE011FF1FE010E', '011F1F01010E0E01', '1FE001FE0EF101FE', 'E0FE1F01F1FE0E01',
+           '011FE0FE010EF1FE', '1FE0E01F0EF1F10E', 'E0FEFEE0F1FEFEF1', '011FFEE0010EFEF1',
+           '1FE0FE010EF1FE01', 'FE0101FEFE0101FE', '01E01FFE01F10EFE', '1FFE01E00EFE01F1',
+           'FE011FE0FE010EF1', 'FE01E01FFE01F10E', '1FFEE0010EFEF101', 'FE1F01E0FE0E01F1',
+           '01E0E00101F1F101', '1FFEFE1F0EFEFE0E', 'FE1FE001FE0EF101', '01E0FE1F01F1FE0E',
+           'E00101E0F10101F1', 'FE1F1FFEFE0E0EFE', '01FE1FE001FE0EF1', 'E0011FFEF1010EFE',
+           'FEE0011FFEF1010E', '01FEE01F01FEF10E', 'E001FE1FF101FE0E', 'FEE01F01FEF10E01',
+           '01FEFE0101FEFE01', 'E01F01FEF10E01FE', 'FEE0E0FEFEF1F1FE', '1F01011F0E01010E',
+           'E01F1FE0F10E0EF1', 'FEFE0101FEFE0101', '1F01E0FE0E01F1FE', 'E01FFE01F10EFE01',
+           'FEFE1F1FFEFE0E0E', '1F01FEE00E01FEF1', 'E0E00101F1F10101', 'FEFEE0E0FEFEF1F1']
 
-
+const=Constants()
 def tables(table):
     if (table == 'IP'):
         '''Used in the inital permutation'''
@@ -359,8 +379,23 @@ def generateEmptyString():
 
 
 def simulate_weak_keys():
-    print(f'The block cipher DES has a few specific keys termed "weak keys" and "semi-weak keys". These are keys that cause the encryption mode of DES to act identically to the decryption mode of DES (albeit potentially that of a different key).')
-
+    print('Weak keys are those keys who after removing the parrity bits are only made up of 0s,1s or half 0s and half 1s')
+    print(f'There are 4 weaks keys in DES and  they are:')
+    print('The round key made by any of these keys is the same in all of the rounds')
+    for k in const.WEAK_KEYS:
+        print(k)
+    print('There are also semi weak keys and they create only 2 round keys and they are repeated 8 times in the 16 rounds.')
+    print(f'There are {len(const.SEMI_WEAK_KEYS)} semi weak keys in des.')
+    print('Some of them are...')
+    for i in range(4):
+        print(const.SEMI_WEAK_KEYS[i])
+    print('...')
+    print('There are also 48 keys that are classified as possible weak keys. \nThey are keys that have only 4 different round keys and are repatead 4 times in the rounds.')
+    print('Some of them are...')
+    for i in range(4):
+        print(const.POSSIBLE_WEAK_KEYS[i])
+    print('...')
+    print(f'The total number of bad keys for des is 4+12+48={4+12+48}, which is a small number of bad keys from the entire possible range of keys that can be chosen.\nStill good not to use them though.')
 
 def simulate100EncodingsAndDecodings():
     c = 0
@@ -375,6 +410,5 @@ def simulate100EncodingsAndDecodings():
 
 
 if __name__ == "__main__":
-    const=Constants()
 
     simulate_weak_keys()
