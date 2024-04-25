@@ -43,7 +43,7 @@ class Constants:
 
     @property
     def WEAK_KEYS(self):
-        return ['0101010101010101', 'FEFEFEFEFEFEFEFE ', 'E0E0E0E0F1F1F1F1', '1F1F1F1F0E0E0E0E']
+        return ['0101010101010101', 'FEFEFEFEFEFEFEFE', 'E0E0E0E0F1F1F1F1', '1F1F1F1F0E0E0E0E']
 
     @property
     def SEMI_WEAK_KEYS(self):
@@ -341,7 +341,11 @@ def fromBinaryToHex(bits):
     if(len(tmp)!=16):
         tmp=paddWord(tmp,16)
     return tmp
-
+def fromBinaryToHex12(bits):
+    tmp= str(hex(int(bits, 2))).split('x')[1].upper()
+    if(len(tmp)!=12):
+        tmp=paddWord(tmp,12)
+    return tmp
 def fromHexToBinary(hex):
     newword = ''
     for i in range(len(hex)):
@@ -381,27 +385,52 @@ def encodeWithVisulationOfRound(pt, key, roundNumber):
     print(f'Initial plain text {fromBinaryToHex(pt)}')
     pt = initial_permutation(pt)
     keys = generateKeys(key)
-    k = 0
+
+    unique_keys=set()
     for i in range(16):
         l, r = pt[:32], pt[32:]
         b = xor(l, feistel(r, keys[i]), 32)
         pt = r + b
-        if ((i % roundNumber == 0) and k != 4):
+        if ((i % roundNumber == 0)):
             print(f'This is the key generated in round {i + 1} :{fromBinaryToHex(keys[i])}')
             print(f'The plain text is : {fromBinaryToHex(pt)}')
-            k += 1
+            unique_keys.add(fromBinaryToHex(keys[i]))
     print('...')
-    print(f'The plaintext at the end is {fromBinaryToHex(inverse_initial_permutation(pt[32:] + pt[:32]))}\n')
+    print(f'The plaintext at the end is {fromBinaryToHex(inverse_initial_permutation(pt[32:] + pt[:32]))}')
+    print(f'Number of unique keys is {len(unique_keys)}, and they are {unique_keys}\n')
     return inverse_initial_permutation(pt[32:] + pt[:32])
 
+def encodeWithVisulationOfRound1(pt, key, roundNumber):
+    checkLen(pt, 'Plain text is not of 64 length', 64)
+    checkLen(key, 'Key not adequate length (64)', 64)
+    print(f'Initial plain text {fromBinaryToHex(pt)}')
+    pt = initial_permutation(pt)
+    keys = generateKeys(key)
+    k=0
+    unique_keys=set()
+    for i in range(16):
+        l, r = pt[:32], pt[32:]
+        b = xor(l, feistel(r, keys[i]), 32)
+        pt = r + b
+        if ((i<5 or i >12)):
+            print(f'This is the key generated in round {i + 1} :{fromBinaryToHex(keys[i])}')
+            print(f'The plain text is : {fromBinaryToHex(pt)}')
+            unique_keys.add(fromBinaryToHex(keys[i]))
+        elif(k!=2):
+            print('...')
+            k+=1
+    print('...')
+    print(f'The plaintext at the end is {fromBinaryToHex(inverse_initial_permutation(pt[32:] + pt[:32]))}')
+    print(f'Number of unique keys is {len(unique_keys)}, and they are {unique_keys}\n')
+    return inverse_initial_permutation(pt[32:] + pt[:32])
 
 def simulateBadKeys(pt=getRandom_N(64)):
     print(f'Simulation of weak key {const.WEAK_KEYS[1]} and plaintext {fromBinaryToHex(pt)} .')
-    a=encodeWithVisulationOfRound(pt, fromHexToBinary(const.WEAK_KEYS[0]), 1)
+    encodeWithVisulationOfRound(pt, fromHexToBinary(const.WEAK_KEYS[0]), 1)
     print(f'Simulation of semi weak key {const.SEMI_WEAK_KEYS[0]} and plaintext {fromBinaryToHex(pt)} .')
-    a=encodeWithVisulationOfRound(pt, fromHexToBinary(const.SEMI_WEAK_KEYS[0]), 2)
+    encodeWithVisulationOfRound(pt, fromHexToBinary(const.SEMI_WEAK_KEYS[0]), 1)
     print(f'Simulation of possible weak key {const.POSSIBLE_WEAK_KEYS[0]} and plaintext {fromBinaryToHex(pt)} .')
-    a=encodeWithVisulationOfRound(pt, fromHexToBinary(const.POSSIBLE_WEAK_KEYS[0]), 4)
+    encodeWithVisulationOfRound(pt, fromHexToBinary(const.POSSIBLE_WEAK_KEYS[0]), 1)
 
 
 def infoAboutWeakKeys():
@@ -441,6 +470,20 @@ def simulate100EncodingsAndDecodings():
 
 
 if __name__ == "__main__":
-    simulate100EncodingsAndDecodings()
+    '''simulate100EncodingsAndDecodings()
     infoAboutWeakKeys()
     simulateBadKeys(const.GENERATED2)
+    encoded=encode(const.GENERATED2,fromHexToBinary(const.WEAK_KEYS[0]))
+    decoded=decode(const.GENERATED2,fromHexToBinary(const.WEAK_KEYS[0]))
+    print(fromBinaryToHex(encoded))
+    print(fromBinaryToHex(decoded))
+    encoded = encode(const.GENERATED2, fromHexToBinary(const.SEMI_WEAK_KEYS[0]))
+    decoded = decode(const.GENERATED2, fromHexToBinary(const.SEMI_WEAK_KEYS[0]))
+    print(fromBinaryToHex(encoded))
+    print(fromBinaryToHex(decoded))
+    encoded = encode(const.GENERATED2, fromHexToBinary(const.POSSIBLE_WEAK_KEYS[0]))
+    decoded = decode(const.GENERATED2, fromHexToBinary(const.POSSIBLE_WEAK_KEYS[0]))
+    print(fromBinaryToHex(encoded))
+    print(fromBinaryToHex(decoded))'''
+    print(f'Simulation of weak key {const.WEAK_KEYS[1]} and plaintext {fromBinaryToHex12(const.GENERATED2)} .')
+    encodeWithVisulationOfRound1(const.GENERATED2, fromHexToBinary(const.WEAK_KEYS[1]), 1)
