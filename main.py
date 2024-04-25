@@ -40,30 +40,36 @@ class Constants:
     @property
     def EMPTY(self):
         return fromBinaryToDec(self.EMPTY2)
+
     @property
     def WEAK_KEYS(self):
-        return  ['0101010101010101', 'FEFEFEFEFEFEFEFE ', 'E0E0E0E0F1F1F1F1', '1F1F1F1F0E0E0E0E']
+        return ['0101010101010101', 'FEFEFEFEFEFEFEFE ', 'E0E0E0E0F1F1F1F1', '1F1F1F1F0E0E0E0E']
+
     @property
     def SEMI_WEAK_KEYS(self):
-        return  ['011F011F010E010E', '1F011F010E010E01', '01E001E001F101F1', 'E001E001F101F101',
-           '01FE01FE01FE01FE', 'FE01FE01FE01FE01', '1FE01FE00EF10EF1', 'E01FE01FF10EF10E',
-           '1FFE1FFE0EFE0EFE', 'FE1FFE1FFE0EFE0E', 'E0FEE0FEF1FEF1FE', 'FEE0FEE0FEF1FEF1']
+        return ['011F011F010E010E', '1F011F010E010E01', '01E001E001F101F1', 'E001E001F101F101',
+                '01FE01FE01FE01FE', 'FE01FE01FE01FE01', '1FE01FE00EF10EF1', 'E01FE01FF10EF10E',
+                '1FFE1FFE0EFE0EFE', 'FE1FFE1FFE0EFE0E', 'E0FEE0FEF1FEF1FE', 'FEE0FEE0FEF1FEF1']
+
     @property
     def POSSIBLE_WEAK_KEYS(self):
         return ['01011F1F01010E0E', '1F1F01010E0E0101', 'E0E01F1FF1F10E0E', '0101E0E00101F1F1',
-           '1F1FE0E00E0EF1F1', 'E0E0FEFEF1F1FEFE', '0101FEFE0101FEFE', '1F1FFEFE0E0EFEFE',
-           'E0FE011FF1FE010E', '011F1F01010E0E01', '1FE001FE0EF101FE', 'E0FE1F01F1FE0E01',
-           '011FE0FE010EF1FE', '1FE0E01F0EF1F10E', 'E0FEFEE0F1FEFEF1', '011FFEE0010EFEF1',
-           '1FE0FE010EF1FE01', 'FE0101FEFE0101FE', '01E01FFE01F10EFE', '1FFE01E00EFE01F1',
-           'FE011FE0FE010EF1', 'FE01E01FFE01F10E', '1FFEE0010EFEF101', 'FE1F01E0FE0E01F1',
-           '01E0E00101F1F101', '1FFEFE1F0EFEFE0E', 'FE1FE001FE0EF101', '01E0FE1F01F1FE0E',
-           'E00101E0F10101F1', 'FE1F1FFEFE0E0EFE', '01FE1FE001FE0EF1', 'E0011FFEF1010EFE',
-           'FEE0011FFEF1010E', '01FEE01F01FEF10E', 'E001FE1FF101FE0E', 'FEE01F01FEF10E01',
-           '01FEFE0101FEFE01', 'E01F01FEF10E01FE', 'FEE0E0FEFEF1F1FE', '1F01011F0E01010E',
-           'E01F1FE0F10E0EF1', 'FEFE0101FEFE0101', '1F01E0FE0E01F1FE', 'E01FFE01F10EFE01',
-           'FEFE1F1FFEFE0E0E', '1F01FEE00E01FEF1', 'E0E00101F1F10101', 'FEFEE0E0FEFEF1F1']
+                '1F1FE0E00E0EF1F1', 'E0E0FEFEF1F1FEFE', '0101FEFE0101FEFE', '1F1FFEFE0E0EFEFE',
+                'E0FE011FF1FE010E', '011F1F01010E0E01', '1FE001FE0EF101FE', 'E0FE1F01F1FE0E01',
+                '011FE0FE010EF1FE', '1FE0E01F0EF1F10E', 'E0FEFEE0F1FEFEF1', '011FFEE0010EFEF1',
+                '1FE0FE010EF1FE01', 'FE0101FEFE0101FE', '01E01FFE01F10EFE', '1FFE01E00EFE01F1',
+                'FE011FE0FE010EF1', 'FE01E01FFE01F10E', '1FFEE0010EFEF101', 'FE1F01E0FE0E01F1',
+                '01E0E00101F1F101', '1FFEFE1F0EFEFE0E', 'FE1FE001FE0EF101', '01E0FE1F01F1FE0E',
+                'E00101E0F10101F1', 'FE1F1FFEFE0E0EFE', '01FE1FE001FE0EF1', 'E0011FFEF1010EFE',
+                'FEE0011FFEF1010E', '01FEE01F01FEF10E', 'E001FE1FF101FE0E', 'FEE01F01FEF10E01',
+                '01FEFE0101FEFE01', 'E01F01FEF10E01FE', 'FEE0E0FEFEF1F1FE', '1F01011F0E01010E',
+                'E01F1FE0F10E0EF1', 'FEFE0101FEFE0101', '1F01E0FE0E01F1FE', 'E01FFE01F10EFE01',
+                'FEFE1F1FFEFE0E0E', '1F01FEE00E01FEF1', 'E0E00101F1F10101', 'FEFEE0E0FEFEF1F1']
 
-const=Constants()
+
+const = Constants()
+
+
 def tables(table):
     if (table == 'IP'):
         '''Used in the inital permutation'''
@@ -182,6 +188,16 @@ def tables(table):
         return S8
 
 
+def checkLen(pt, text, n):
+    if (len(pt) != n):
+        raise Exception(text)
+
+
+def check2Len(bits, key, text):
+    if (len(bits) != len(key)):
+        raise Exception(text)
+
+
 def getShiftAmmount(round, flag):
     if ((round == 1 and flag == 1) or round == 2 or round == 9 or round == 16):
         return 1
@@ -211,30 +227,24 @@ def setBits(bits, table):
 
 
 def expansion(bits):
-    if (len(bits) != 32):
-        raise Exception('Not the right length (32)')
+    checkLen(bits, 'Not the right length  for expansion (32)', 32)
     return setBits(bits, tables("EX"))
 
 
 def initial_permutation(bits):
-    if (len(bits) != len(tables('IP'))):
-        raise Exception('Cant make the permutatioion IP because they are different lengths.')
-    if (len(bits) != 64):
-        raise Exception('Not the right length (64).')
+    check2Len(bits, tables('IP'), 'Cant make the permutation IP because they are different lengths.')
+    checkLen(bits, 'Not the right length (64).', 64)
     return setBits(bits, tables('IP'))
 
 
 def inverse_initial_permutation(bits):
-    if (len(bits) != len(tables('IIP'))):
-        raise Exception('Cant make the permutatioion IP because they are different lengths.')
-    if (len(bits) != 64):
-        raise Exception('Not the right length (64).')
+    check2Len(bits, tables('IIP'), 'Cant make the permutation IP because they are different lengths.')
+    checkLen(bits, 'Not the right length (64).', 64)
     return setBits(bits, tables('IIP'))
 
 
 def xor(bits, key, num):
-    if (len(bits) != len(key)):
-        raise Exception("Can`t XOR if they are different lengths")
+    check2Len(bits, key, "Can`t XOR if they are different lengths")
     return paddWord(str(bin(int(bits, 2) ^ int(key, 2))).split('b')[1], num)
 
 
@@ -243,8 +253,7 @@ def setSbox(bits, table):
 
 
 def s_boxes(bits):
-    if (len(bits) != 48):
-        raise Exception('Can`t do s boxes, not the same length')
+    checkLen(bits, 'Can`t do s boxes, not 48 length', 48)
     newbits = ""
     for i in range(8):
         word = str(bin(setSbox(bits[6 * i:6 * i + 6], f'S{i + 1}'))).split('b')[1]
@@ -265,10 +274,9 @@ def perumtation(word):
 
 
 def feistel(r, key):
-    if (len(r) != 32):
-        raise Exception('Right side is not 32')
-    if (len(key) != 48):
-        raise Exception('Key is not 48')
+    checkLen(r, 'Right side is not 32', 32)
+    checkLen(key, 'Key is not 48', 48)
+
     r = expansion(r)
     r = xor(r, key, 48)
     r = s_boxes(r)
@@ -277,8 +285,7 @@ def feistel(r, key):
 
 
 def generateKeys(key):
-    if (len(key) != 64):
-        raise Exception('Key not adequate length (64)')
+    checkLen(key, 'Key not adequate length (64)', 64)
     keys = []
     l, r = setBits(key, tables('PCL')), setBits(key, tables('PCR'))
     for i in range(16):
@@ -288,10 +295,8 @@ def generateKeys(key):
 
 
 def encode(pt, key):
-    if (len(pt) != 64):
-        raise Exception('Plain text is not of 64 length')
-    if (len(key) != 64):
-        raise Exception('Key not adequate length (64)')
+    checkLen(pt, 'Plain text is not of 64 length', 64)
+    checkLen(key, 'Key not adequate length (64)', 64)
     pt = initial_permutation(pt)
     keys = generateKeys(key)
     for i in range(16):
@@ -302,10 +307,9 @@ def encode(pt, key):
 
 
 def decode(pt, key):
-    if (len(pt) != 64):
-        raise Exception('Plain text is not of 64 length')
-    if (len(key) != 64):
-        raise Exception('Key not adequate length (64)')
+    checkLen(pt, 'Plain text is not of 64 length', 64)
+    checkLen(key, 'Key not adequate length (64)', 64)
+
     pt = initial_permutation(pt)
     keys = generateKeys(key)
     for i in range(16):
@@ -363,26 +367,33 @@ def generateEmptyString():
     return new
 
 
+def encodeWithVisulationOfRound(pt, key):
+    pass
 
 
 def simulate_weak_keys():
-    print('Weak keys are those keys who after removing the parrity bits are only made up of 0s,1s or half 0s and half 1s')
+    print(
+        'Weak keys are those keys who after removing the parrity bits are only made up of 0s,1s or half 0s and half 1s')
     print(f'There are 4 weaks keys in DES and  they are:')
     print('The round key made by any of these keys is the same in all of the rounds')
     for k in const.WEAK_KEYS:
         print(k)
-    print('There are also semi weak keys and they create only 2 round keys and they are repeated 8 times in the 16 rounds.')
+    print(
+        'There are also semi weak keys and they create only 2 round keys and they are repeated 8 times in the 16 rounds.')
     print(f'There are {len(const.SEMI_WEAK_KEYS)} semi weak keys in des.')
     print('Some of them are...')
     for i in range(4):
         print(const.SEMI_WEAK_KEYS[i])
     print('...')
-    print('There are also 48 keys that are classified as possible weak keys. \nThey are keys that have only 4 different round keys and are repatead 4 times in the rounds.')
+    print(
+        'There are also 48 keys that are classified as possible weak keys. \nThey are keys that have only 4 different round keys and are repatead 4 times in the rounds.')
     print('Some of them are...')
     for i in range(4):
         print(const.POSSIBLE_WEAK_KEYS[i])
     print('...')
-    print(f'The total number of bad keys for des is 4+12+48={4+12+48}, which is a small number of bad keys from the entire possible range of keys that can be chosen.\nStill good not to use them though.')
+    print(
+        f'The total number of bad keys for des is 4+12+48={4 + 12 + 48}, which is a small number of bad keys from the entire possible range of keys that can be chosen.\nStill good not to use them though.')
+
 
 def simulate100EncodingsAndDecodings():
     c = 0
@@ -397,5 +408,4 @@ def simulate100EncodingsAndDecodings():
 
 
 if __name__ == "__main__":
-
     simulate_weak_keys()
