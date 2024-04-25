@@ -3,7 +3,7 @@ import random
 
 class Constants:
     def __init__(self):
-        print(f'Constants are KEY,GENERATED and EMPTY')
+        print(f'Constants are KEY,GENERATED and EMPTY\n')
 
     @property
     def KEY2(self):
@@ -341,7 +341,14 @@ def fromBinaryToHex(bits):
 
 
 def fromHexToBinary(hex):
-    return str(bin(int(hex, 16))).split('b')[1]
+    # return str(bin(int(hex, 16))).split('b')[1]
+    newword = ''
+    for i in range(len(hex)):
+        word = str(bin(int(hex[i], 16))).split('b')[1]
+        if (len(word) != 4):
+            word = paddWord(word, 4)
+        newword += word
+    return newword
 
 
 def fromDecToHex(dec):
@@ -367,11 +374,36 @@ def generateEmptyString():
     return new
 
 
-def encodeWithVisulationOfRound(pt, key):
-    pass
+def encodeWithVisulationOfRound(pt, key, roundNumber):
+    checkLen(pt, 'Plain text is not of 64 length', 64)
+    checkLen(key, 'Key not adequate length (64)', 64)
+    print(f'Initial plain text {fromBinaryToHex(pt)}')
+    pt = initial_permutation(pt)
+    keys = generateKeys(key)
+    k = 0
+    for i in range(16):
+        l, r = pt[:32], pt[32:]
+        b = xor(l, feistel(r, keys[i]), 32)
+        pt = r + b
+        if (i % roundNumber == 0 and k != 4):
+            print(f'This is the key generated in round {i + 1} :{fromBinaryToHex(keys[roundNumber])}')
+            print(f'The plain text is : {fromBinaryToHex(pt)}')
+            k += 1
+    print('...')
+    print(f'The plaintext at the end is {fromBinaryToHex(inverse_initial_permutation(pt[32:] + pt[:32]))}\n')
+    return inverse_initial_permutation(pt[32:] + pt[:32])
 
 
-def simulate_weak_keys():
+def simulateBadKeys(pt=getRandom_N(64)):
+    print(f'Simulation of weak key {const.WEAK_KEYS[1]} and plaintext {fromBinaryToHex(pt)} .')
+    encodeWithVisulationOfRound(pt, fromHexToBinary(const.WEAK_KEYS[0]), 1)
+    print(f'Simulation of semi weak key {const.SEMI_WEAK_KEYS[0]} and plaintext {fromBinaryToHex(pt)} .')
+    encodeWithVisulationOfRound(pt, fromHexToBinary(const.SEMI_WEAK_KEYS[0]), 2)
+    print(f'Simulation of possible weak key {const.POSSIBLE_WEAK_KEYS[0]} and plaintext {fromBinaryToHex(pt)} .')
+    encodeWithVisulationOfRound(pt, fromHexToBinary(const.POSSIBLE_WEAK_KEYS[0]), 4)
+
+
+def infoAboutWeakKeys():
     print(
         'Weak keys are those keys who after removing the parrity bits are only made up of 0s,1s or half 0s and half 1s')
     print(f'There are 4 weaks keys in DES and  they are:')
@@ -408,4 +440,6 @@ def simulate100EncodingsAndDecodings():
 
 
 if __name__ == "__main__":
-    simulate_weak_keys()
+    simulate100EncodingsAndDecodings()
+    infoAboutWeakKeys()
+    simulateBadKeys(const.GENERATED2)
