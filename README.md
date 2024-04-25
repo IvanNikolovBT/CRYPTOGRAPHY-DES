@@ -1,0 +1,1 @@
+This is the repo for my implementation of the DES encryption and decrpytion algorithm for my college course Cryptography. It is written in Python and all of the code is written by hand by me. You may use it if you wish, it is public domain, just this is my own implementation. 
