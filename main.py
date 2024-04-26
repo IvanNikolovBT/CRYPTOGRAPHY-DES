@@ -53,7 +53,7 @@ class Constants:
 
     @property
     def POSSIBLE_WEAK_KEYS(self):
-        return ['01011F1F01010E0E', '1F1F01010E0E0101', 'E0E01F1FF1F10E0E', '0101E0E00101F1F1',
+            return ['01011F1F01010E0E', '1F1F01010E0E0101', 'E0E01F1FF1F10E0E', '0101E0E00101F1F1',
                 '1F1FE0E00E0EF1F1', 'E0E0FEFEF1F1FEFE', '0101FEFE0101FEFE', '1F1FFEFE0E0EFEFE',
                 'E0FE011FF1FE010E', '011F1F01010E0E01', '1FE001FE0EF101FE', 'E0FE1F01F1FE0E01',
                 '011FE0FE010EF1FE', '1FE0E01F0EF1F10E', 'E0FEFEE0F1FEFEF1', '011FFEE0010EFEF1',
@@ -412,7 +412,7 @@ def encodeWithVisulationOfRound1(pt, key):
         l, r = pt[:32], pt[32:]
         b = xor(l, feistel(r, keys[i]), 32)
         pt = r + b
-        if ((i<4 or i >13)):
+        if ((i<6 or i >13)):
             print(f'This is the key generated in round {i + 1} :{fromBinaryToHex12(keys[i])}')
             print(f'The plain text is : {fromBinaryToHex(pt)}')
             unique_keys.add(fromBinaryToHex12(keys[i]))
@@ -468,7 +468,37 @@ def simulate100EncodingsAndDecodings():
             c += 1
     print(f'From 100 random generated keys and plaintexts, we have correctly encoded and decoded {c}')
 
+def groupByKeys():
+        listOfSets=[]
+        PSK=const.POSSIBLE_WEAK_KEYS
 
+        for k in PSK:
+            unique_keys = set()
+            keys=generateKeys(fromHexToBinary(k))
+            for j in keys:
+                unique_keys.add(fromBinaryToHex12(j))
+            listOfSets.append((k,unique_keys))
+        for i in listOfSets:
+            print(i)
+
+
+def groupByKeysExample():
+    listOfSets = []
+    tmp=const.POSSIBLE_WEAK_KEYS
+    PSK = ['01011F1F01010E0E', '011F1F01010E0E01', '1F01011F0E01010E', '1F1F01010E0E0101']
+    PSK=tmp
+    for k in PSK:
+        unique_keys = set()
+        orderOfAppearance = []
+        keys = generateKeys(fromHexToBinary(k))
+        for j in keys:
+            if fromBinaryToHex12(j) not in unique_keys:
+                unique_keys.add(fromBinaryToHex12(j))
+                orderOfAppearance.append(fromBinaryToHex12(j))
+        listOfSets.append((k, orderOfAppearance))
+    for i in listOfSets:
+        print(i)
+def
 if __name__ == "__main__":
     '''simulate100EncodingsAndDecodings()
     infoAboutWeakKeys()
@@ -484,6 +514,30 @@ if __name__ == "__main__":
     encoded = encode(const.GENERATED2, fromHexToBinary(const.POSSIBLE_WEAK_KEYS[0]))
     decoded = decode(const.GENERATED2, fromHexToBinary(const.POSSIBLE_WEAK_KEYS[0]))
     print(fromBinaryToHex(encoded))
-    print(fromBinaryToHex(decoded))'''
-    print(f'Simulation of weak key {const.WEAK_KEYS[1]} and plaintext {fromBinaryToHex(const.GENERATED2)} .')
-    encodeWithVisulationOfRound1(const.GENERATED2, fromHexToBinary(const.WEAK_KEYS[1]))
+    print(fromBinaryToHex(decoded))
+    for k in const.SEMI_WEAK_KEYS:
+        print(f'Simulation of weak key {k} and plaintext {fromBinaryToHex(const.GENERATED2)} .')
+        encodeWithVisulationOfRound1(const.GENERATED2, fromHexToBinary(k)) 
+    print(f'Simulation of weak key {const.SEMI_WEAK_KEYS[1]} and plaintext {fromBinaryToHex(const.GENERATED2)} .')
+    encodeWithVisulationOfRound1(const.GENERATED2, fromHexToBinary(const.SEMI_WEAK_KEYS[1]))
+    print(f'Encoded version of {fromBinaryToHex(const.GENERATED2)} with {(const.SEMI_WEAK_KEYS[0])} is \n{fromBinaryToHex(encode(const.GENERATED2,fromHexToBinary(const.SEMI_WEAK_KEYS[0])))}')
+    print(f'But if we decode {fromBinaryToHex(const.GENERATED2)} with the same weak key we get \n{fromBinaryToHex(decode(const.GENERATED2,fromHexToBinary(const.SEMI_WEAK_KEYS[0])))}')
+
+    print(f'Encoded version of {fromBinaryToHex(const.GENERATED2)}  with {(const.SEMI_WEAK_KEYS[1])} is \n{fromBinaryToHex(encode(const.GENERATED2, fromHexToBinary(const.SEMI_WEAK_KEYS[1])))}')
+    print(f'But if we decode {fromBinaryToHex(const.GENERATED2)} with the same weak key we get \n{fromBinaryToHex(decode(const.GENERATED2, fromHexToBinary(const.SEMI_WEAK_KEYS[1])))}')
+    
+    
+    encoded=encode(const.GENERATED2,fromHexToBinary(const.POSSIBLE_WEAK_KEYS[0]))
+    decoded=encode(encoded,fromHexToBinary(const.POSSIBLE_WEAK_KEYS[1]))
+    encodeWithVisulationOfRound1(const.GENERATED2,fromHexToBinary(const.POSSIBLE_WEAK_KEYS[0]))
+    encodeWithVisulationOfRound1(const.GENERATED2, fromHexToBinary(const.POSSIBLE_WEAK_KEYS[1]))
+    encodeWithVisulationOfRound1(const.GENERATED2, fromHexToBinary(const.POSSIBLE_WEAK_KEYS[6]))
+    encodeWithVisulationOfRound1(const.GENERATED2, fromHexToBinary(const.POSSIBLE_WEAK_KEYS[7]))
+   
+    print(f'The plain text is {fromBinaryToHex(const.GENERATED2)}.')
+    print(f'The encoded text is {fromBinaryToHex(encoded)}.')
+    print(f'The decoded text is {fromBinaryToHex(decoded)}.')
+    print(len(const.POSSIBLE_WEAK_KEYS))'''
+    #encodeWithVisulationOfRound1(const.GENERATED2,fromHexToBinary(const.POSSIBLE_WEAK_KEYS[0]))
+    #groupByKeys()
+    #groupByKeysExample()
