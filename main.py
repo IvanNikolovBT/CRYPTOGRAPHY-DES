@@ -500,63 +500,10 @@ def groupByKeysExample():
         print(i)
 
 if __name__ == "__main__":
-    '''simulate100EncodingsAndDecodings()
+    simulate100EncodingsAndDecodings()
     infoAboutWeakKeys()
     simulateBadKeys(const.GENERATED2)
-    encoded=encode(const.GENERATED2,fromHexToBinary(const.WEAK_KEYS[0]))
-    decoded=decode(const.GENERATED2,fromHexToBinary(const.WEAK_KEYS[0]))
-    print(fromBinaryToHex(encoded))
-    print(fromBinaryToHex(decoded))
-    encoded = encode(const.GENERATED2, fromHexToBinary(const.SEMI_WEAK_KEYS[0]))
-    decoded = decode(const.GENERATED2, fromHexToBinary(const.SEMI_WEAK_KEYS[0]))
-    print(fromBinaryToHex(encoded))
-    print(fromBinaryToHex(decoded))
-    encoded = encode(const.GENERATED2, fromHexToBinary(const.POSSIBLE_WEAK_KEYS[0]))
-    decoded = decode(const.GENERATED2, fromHexToBinary(const.POSSIBLE_WEAK_KEYS[0]))
-    print(fromBinaryToHex(encoded))
-    print(fromBinaryToHex(decoded))
-    for k in const.SEMI_WEAK_KEYS:
-        print(f'Simulation of weak key {k} and plaintext {fromBinaryToHex(const.GENERATED2)} .')
-        encodeWithVisulationOfRound1(const.GENERATED2, fromHexToBinary(k)) 
-    print(f'Simulation of weak key {const.SEMI_WEAK_KEYS[1]} and plaintext {fromBinaryToHex(const.GENERATED2)} .')
-    encodeWithVisulationOfRound1(const.GENERATED2, fromHexToBinary(const.SEMI_WEAK_KEYS[1]))
-    print(f'Encoded version of {fromBinaryToHex(const.GENERATED2)} with {(const.SEMI_WEAK_KEYS[0])} is \n{fromBinaryToHex(encode(const.GENERATED2,fromHexToBinary(const.SEMI_WEAK_KEYS[0])))}')
-    print(f'But if we decode {fromBinaryToHex(const.GENERATED2)} with the same weak key we get \n{fromBinaryToHex(decode(const.GENERATED2,fromHexToBinary(const.SEMI_WEAK_KEYS[0])))}')
 
-    print(f'Encoded version of {fromBinaryToHex(const.GENERATED2)}  with {(const.SEMI_WEAK_KEYS[1])} is \n{fromBinaryToHex(encode(const.GENERATED2, fromHexToBinary(const.SEMI_WEAK_KEYS[1])))}')
-    print(f'But if we decode {fromBinaryToHex(const.GENERATED2)} with the same weak key we get \n{fromBinaryToHex(decode(const.GENERATED2, fromHexToBinary(const.SEMI_WEAK_KEYS[1])))}')
-    
-    
-    encoded=encode(const.GENERATED2,fromHexToBinary(const.POSSIBLE_WEAK_KEYS[0]))
-    decoded=encode(encoded,fromHexToBinary(const.POSSIBLE_WEAK_KEYS[1]))
-    encodeWithVisulationOfRound1(const.GENERATED2,fromHexToBinary(const.POSSIBLE_WEAK_KEYS[0]))
-    encodeWithVisulationOfRound1(const.GENERATED2, fromHexToBinary(const.POSSIBLE_WEAK_KEYS[1]))
-    encodeWithVisulationOfRound1(const.GENERATED2, fromHexToBinary(const.POSSIBLE_WEAK_KEYS[6]))
-    encodeWithVisulationOfRound1(const.GENERATED2, fromHexToBinary(const.POSSIBLE_WEAK_KEYS[7]))
-   
-    print(f'The plain text is {fromBinaryToHex(const.GENERATED2)}.')
-    print(f'The encoded text is {fromBinaryToHex(encoded)}.')
-    print(f'The decoded text is {fromBinaryToHex(decoded)}.')
-    print(len(const.POSSIBLE_WEAK_KEYS))'''
-    #encodeWithVisulationOfRound1(const.GENERATED2,fromHexToBinary(const.POSSIBLE_WEAK_KEYS[0]))
-    #groupByKeys()
-    #groupByKeysExample()
-    PSK = ['01011F1F01010E0E', '011F1F01010E0E01', '1F01011F0E01010E', '1F1F01010E0E0101']
-    proverka=[generateKeys(fromHexToBinary(PSK[0])),generateKeys(fromHexToBinary(PSK[1])),generateKeys(fromHexToBinary(PSK[2])),generateKeys(fromHexToBinary(PSK[3]))]
-    for i in range(4):
-        for j in range(4):
-            if(proverka[i]==proverka[j].reverse()):
-                print(f'ISTI SE {i} i {j}')
-
-
-    #encodeWithVisulationOfRound1(const.GENERATED2,fromHexToBinary(const.POSSIBLE_WEAK_KEYS[0]))
-    #encoded=encrypt(const.GENERATED2,fromHexToBinary(const.SEMI_WEAK_KEYS[0]))
-    #encoded2=encrypt(encoded,fromHexToBinary(const.SEMI_WEAK_KEYS[1]))
-    #print(f'Plain text is {const.GENERATED16}')
-    #print(f'Encrypted with {const.SEMI_WEAK_KEYS[0] }is {fromBinaryToHex(encoded)}')
-    #print(f'Encrypted again with {const.SEMI_WEAK_KEYS[1]} is {fromBinaryToHex(encoded2)}')
-
-    '''
     print(f'Encrytped version of {const.GENERATED16} with {const.SEMI_WEAK_KEYS[0]} is')
     encrypted=encrypt(const.GENERATED2,fromHexToBinary(const.SEMI_WEAK_KEYS[0]))
     print(f'{fromBinaryToHex(encrypted)}')
@@ -569,10 +516,5 @@ if __name__ == "__main__":
     print(f'{fromBinaryToHex(encrypted)}')
     print(f'But if we decrpyt  {const.GENERATED16} with the same key {const.SEMI_WEAK_KEYS[1]} we get')
     decrypted = decrypt(const.GENERATED2, fromHexToBinary(const.SEMI_WEAK_KEYS[1]))
-    print(f'{fromBinaryToHex(decrypted)}')'''
+    print(f'{fromBinaryToHex(decrypted)}')
 
-    encrypted=encrypt(const.GENERATED2,fromHexToBinary(const.SEMI_WEAK_KEYS[0]))
-    encrypted1=encrypt(encrypted,fromHexToBinary(const.SEMI_WEAK_KEYS[1]))
-    print(f'Plain text is {const.GENERATED16}')
-    print(f'Encrypted with {const.SEMI_WEAK_KEYS[0] }is {fromBinaryToHex(encrypted)}')
-    print(f'Encrypted again with {const.SEMI_WEAK_KEYS[1]} is {fromBinaryToHex(encrypted1)}')
