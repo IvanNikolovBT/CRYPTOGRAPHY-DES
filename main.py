@@ -294,7 +294,7 @@ def generateKeys(key):
     return keys
 
 
-def encode(pt, key):
+def encrypt(pt, key):
     checkLen(pt, 'Plain text is not of 64 length', 64)
     checkLen(key, 'Key not adequate length (64)', 64)
     pt = initial_permutation(pt)
@@ -306,7 +306,7 @@ def encode(pt, key):
     return inverse_initial_permutation(pt[32:] + pt[:32])
 
 
-def decode(pt, key):
+def decrypt(pt, key):
     checkLen(pt, 'Plain text is not of 64 length', 64)
     checkLen(key, 'Key not adequate length (64)', 64)
 
@@ -379,7 +379,7 @@ def generateEmptyString():
     return new
 
 
-def encodeWithVisulationOfRound(pt, key, roundNumber):
+def encryptWithVisulationOfRound(pt, key, roundNumber):
     checkLen(pt, 'Plain text is not of 64 length', 64)
     checkLen(key, 'Key not adequate length (64)', 64)
     print(f'Initial plain text {fromBinaryToHex(pt)}')
@@ -400,7 +400,7 @@ def encodeWithVisulationOfRound(pt, key, roundNumber):
     print(f'Number of unique keys is {len(unique_keys)}, and they are {unique_keys}\n')
     return inverse_initial_permutation(pt[32:] + pt[:32])
 
-def encodeWithVisulationOfRound1(pt, key):
+def encryptWithVisulationOfRound1(pt, key):
     checkLen(pt, 'Plain text is not of 64 length', 64)
     checkLen(key, 'Key not adequate length (64)', 64)
     print(f'Initial plain text {fromBinaryToHex(pt)}')
@@ -412,7 +412,7 @@ def encodeWithVisulationOfRound1(pt, key):
         l, r = pt[:32], pt[32:]
         b = xor(l, feistel(r, keys[i]), 32)
         pt = r + b
-        if ((i<6 or i >13)):
+        if (True):
             print(f'This is the key generated in round {i + 1} :{fromBinaryToHex12(keys[i])}')
             print(f'The plain text is : {fromBinaryToHex(pt)}')
             unique_keys.add(fromBinaryToHex12(keys[i]))
@@ -426,16 +426,16 @@ def encodeWithVisulationOfRound1(pt, key):
 
 def simulateBadKeys(pt=getRandom_N(64)):
     print(f'Simulation of weak key {const.WEAK_KEYS[1]} and plaintext {fromBinaryToHex(pt)} .')
-    encodeWithVisulationOfRound(pt, fromHexToBinary(const.WEAK_KEYS[0]), 1)
+    encryptWithVisulationOfRound(pt, fromHexToBinary(const.WEAK_KEYS[0]), 1)
     print(f'Simulation of semi weak key {const.SEMI_WEAK_KEYS[0]} and plaintext {fromBinaryToHex(pt)} .')
-    encodeWithVisulationOfRound(pt, fromHexToBinary(const.SEMI_WEAK_KEYS[0]), 1)
+    encryptWithVisulationOfRound(pt, fromHexToBinary(const.SEMI_WEAK_KEYS[0]), 1)
     print(f'Simulation of possible weak key {const.POSSIBLE_WEAK_KEYS[0]} and plaintext {fromBinaryToHex(pt)} .')
-    encodeWithVisulationOfRound(pt, fromHexToBinary(const.POSSIBLE_WEAK_KEYS[0]), 1)
+    encryptWithVisulationOfRound(pt, fromHexToBinary(const.POSSIBLE_WEAK_KEYS[0]), 1)
 
 
 def infoAboutWeakKeys():
     print(
-        'Weak keys are those keys who after removing the parrity bits are only made up of 0s,1s or half 0s and half 1s')
+        'Weak keys are those keys who after removing the parity bits are only made up of 0s,1s or half 0s and half 1s')
     print(f'There are 4 weaks keys in DES and  they are:')
     print('The round key made by any of these keys is the same in all of the rounds')
     for k in const.WEAK_KEYS:
@@ -462,11 +462,11 @@ def simulate100EncodingsAndDecodings():
     for i in range(100):
         text = getRandom_N(64)
         key = getRandom_N(64)
-        encoded = encode(text, key)
-        decoded = decode(encoded, key)
-        if decoded == text:
+        encrypted = encrypt(text, key)
+        decrypted = decrypt(encrypted, key)
+        if decrypted == text:
             c += 1
-    print(f'From 100 random generated keys and plaintexts, we have correctly encoded and decoded {c}')
+    print(f'From 100 random generated keys and plaintexts, we have correctly encrypted and decrypted {c}')
 
 def groupByKeys():
         listOfSets=[]
@@ -486,7 +486,7 @@ def groupByKeysExample():
     listOfSets = []
     tmp=const.POSSIBLE_WEAK_KEYS
     PSK = ['01011F1F01010E0E', '011F1F01010E0E01', '1F01011F0E01010E', '1F1F01010E0E0101']
-    PSK=tmp
+    #PSK=tmp
     for k in PSK:
         unique_keys = set()
         orderOfAppearance = []
@@ -498,7 +498,7 @@ def groupByKeysExample():
         listOfSets.append((k, orderOfAppearance))
     for i in listOfSets:
         print(i)
-def
+
 if __name__ == "__main__":
     '''simulate100EncodingsAndDecodings()
     infoAboutWeakKeys()
@@ -541,3 +541,38 @@ if __name__ == "__main__":
     #encodeWithVisulationOfRound1(const.GENERATED2,fromHexToBinary(const.POSSIBLE_WEAK_KEYS[0]))
     #groupByKeys()
     #groupByKeysExample()
+    PSK = ['01011F1F01010E0E', '011F1F01010E0E01', '1F01011F0E01010E', '1F1F01010E0E0101']
+    proverka=[generateKeys(fromHexToBinary(PSK[0])),generateKeys(fromHexToBinary(PSK[1])),generateKeys(fromHexToBinary(PSK[2])),generateKeys(fromHexToBinary(PSK[3]))]
+    for i in range(4):
+        for j in range(4):
+            if(proverka[i]==proverka[j].reverse()):
+                print(f'ISTI SE {i} i {j}')
+
+
+    #encodeWithVisulationOfRound1(const.GENERATED2,fromHexToBinary(const.POSSIBLE_WEAK_KEYS[0]))
+    #encoded=encrypt(const.GENERATED2,fromHexToBinary(const.SEMI_WEAK_KEYS[0]))
+    #encoded2=encrypt(encoded,fromHexToBinary(const.SEMI_WEAK_KEYS[1]))
+    #print(f'Plain text is {const.GENERATED16}')
+    #print(f'Encrypted with {const.SEMI_WEAK_KEYS[0] }is {fromBinaryToHex(encoded)}')
+    #print(f'Encrypted again with {const.SEMI_WEAK_KEYS[1]} is {fromBinaryToHex(encoded2)}')
+
+    '''
+    print(f'Encrytped version of {const.GENERATED16} with {const.SEMI_WEAK_KEYS[0]} is')
+    encrypted=encrypt(const.GENERATED2,fromHexToBinary(const.SEMI_WEAK_KEYS[0]))
+    print(f'{fromBinaryToHex(encrypted)}')
+    print(f'But if we decrpyt  {const.GENERATED16} with the same key {const.SEMI_WEAK_KEYS[0]} we get')
+    decrypted=decrypt(const.GENERATED2,fromHexToBinary(const.SEMI_WEAK_KEYS[0]))
+    print(f'{fromBinaryToHex(decrypted)}')
+
+    print(f'Encrytped version of {const.GENERATED16} with {const.SEMI_WEAK_KEYS[1]} is')
+    encrypted = encrypt(const.GENERATED2, fromHexToBinary(const.SEMI_WEAK_KEYS[1]))
+    print(f'{fromBinaryToHex(encrypted)}')
+    print(f'But if we decrpyt  {const.GENERATED16} with the same key {const.SEMI_WEAK_KEYS[1]} we get')
+    decrypted = decrypt(const.GENERATED2, fromHexToBinary(const.SEMI_WEAK_KEYS[1]))
+    print(f'{fromBinaryToHex(decrypted)}')'''
+
+    encrypted=encrypt(const.GENERATED2,fromHexToBinary(const.SEMI_WEAK_KEYS[0]))
+    encrypted1=encrypt(encrypted,fromHexToBinary(const.SEMI_WEAK_KEYS[1]))
+    print(f'Plain text is {const.GENERATED16}')
+    print(f'Encrypted with {const.SEMI_WEAK_KEYS[0] }is {fromBinaryToHex(encrypted)}')
+    print(f'Encrypted again with {const.SEMI_WEAK_KEYS[1]} is {fromBinaryToHex(encrypted1)}')
