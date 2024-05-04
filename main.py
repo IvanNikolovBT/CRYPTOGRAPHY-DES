@@ -457,7 +457,7 @@ def infoAboutWeakKeys():
         f'The total number of bad keys for des is 4+12+48={4 + 12 + 48}, which is a small number of bad keys from the entire possible range of keys that can be chosen.\nStill good not to use them though.')
 
 
-def simulate100EncodingsAndDecodings():
+def simulate100EncrypsAndDecrypts():
     c = 0
     for i in range(100):
         text = getRandom_N(64)
@@ -500,7 +500,7 @@ def groupByKeysExample():
         print(i)
 
 if __name__ == "__main__":
-    simulate100EncodingsAndDecodings()
+    simulate100EncrypsAndDecrypts()
     infoAboutWeakKeys()
     simulateBadKeys(const.GENERATED2)
 
